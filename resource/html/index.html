@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>anime-repository-web</title>
+    <link rel="stylesheet" href="../style/index.css" >
+    <link rel="stylesheet" href="../style/reset.css">
+    <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/naive-ui@2.34.4/dist/index.prod.js"></script>
+</head>
+<body>
+    <div id="app">
+        <n-layout has-sider>
+            <n-layout-sider
+                content-style="padding: 24px;background-color:rgba(84,174,255,.5);color:#ffffff;font-size:30px;"
+                show-trigger="bar">
+                <n-menu :options="options" >
+                </n-menu>
+            </n-layout-sider>
+            <n-layout>
+
+            </n-layout>
+        </n-layout>
+    </div>
+    <script >
+        const App = {
+            setup(){
+                return {
+                    message:'naive',
+                    options:[
+                        {label:'订阅规则',key:'rule'},
+                        {label: '待处理文件',key: 'files'}
+                    ]
+                }
+            }
+        }
+        const app = Vue.createApp(App)
+        app.use(naive)
+        app.mount('#app')
+    </script>
+</body>
+</html>
