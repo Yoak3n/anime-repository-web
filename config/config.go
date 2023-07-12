@@ -2,6 +2,7 @@ package config
 
 import (
 	"github.com/spf13/viper"
+	"github/Yoak3n/anime-repository-web/package/util"
 	"log"
 	"net/url"
 )
@@ -42,5 +43,13 @@ func init() {
 	Conf.TVPath = v.GetString("tv_path")
 	Conf.MoviePath = v.GetString("movie_path")
 	Conf.Delay = v.GetInt64("delay")
+	Conf.RawPath = v.GetString("raw_path")
+	Conf.handlerPath()
 	v.WatchConfig()
+}
+
+func (c *Configuration) handlerPath() {
+	c.TVPath = util.ReplacePressDown(c.TVPath)
+	c.RawPath = util.ReplacePressDown(c.RawPath)
+	c.MoviePath = util.ReplacePressDown(c.MoviePath)
 }

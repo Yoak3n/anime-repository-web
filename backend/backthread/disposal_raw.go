@@ -1,5 +1,5 @@
 package backthread
 
-func Dispose(path string) {
+func Dispose(filePath string) {
 
 }

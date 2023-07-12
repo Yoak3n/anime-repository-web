@@ -1,1 +1,0 @@
-import {} from 'resource/script/index'

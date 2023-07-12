@@ -4,6 +4,7 @@ import "github.com/gin-gonic/gin"
 
 func runController() {
 	r.GET("/", renderIndex)
+	r.Static("/assets", "resource/assets")
 	apiV1()
 }
 

@@ -3,9 +3,9 @@ package router
 import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github/Yoak3n/anime-repository-web/backend/backthread"
 	"github/Yoak3n/anime-repository-web/config"
 	"github/Yoak3n/anime-repository-web/package/request"
-	"github/Yoak3n/anime-repository-web/package/util"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -13,10 +13,9 @@ import (
 )
 
 func renderIndex(c *gin.Context) {
-	r.LoadHTMLGlob("resource/html/index.html")
-	r.StaticFile("favicon.ico", "resource/html/favicon.ico")
-	r.Static("/style", "resource/style")
-	r.Static("/script", "resource/script")
+	r.LoadHTMLFiles("resource/index.html")
+	//r.StaticFile("favicon.ico", "resource/html/favicon.ico")
+
 	c.HTML(http.StatusOK, "index.html", "")
 }
 
@@ -42,7 +41,7 @@ func getTvInfo(c *gin.Context) {
 	if err != nil {
 		fail(c, err.Error())
 	}
-	util.NewTVNfo(tvInfo)
+	backthread.NewTVNfo(tvInfo)
 	marshal, err := json.Marshal(&tvInfo)
 	if err != nil {
 		return

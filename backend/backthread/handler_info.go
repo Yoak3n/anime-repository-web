@@ -1,4 +1,4 @@
-package util
+package backthread
 
 import (
 	"bufio"
@@ -7,6 +7,7 @@ import (
 	tmdb "github.com/cyruzin/golang-tmdb"
 	"github/Yoak3n/anime-repository-web/backend/model"
 	"github/Yoak3n/anime-repository-web/config"
+	"github/Yoak3n/anime-repository-web/package/util"
 	"io"
 	"log"
 	"net/http"
@@ -41,13 +42,13 @@ func NewTVNfo(tv *tmdb.TVDetails) {
 	// genThumbs
 	thumbs := make([]model.Thumb, 0)
 	// clearlogo
-	thumbs = append(thumbs, model.Thumb{Aspect: "clearlogo", Value: makeImagePath(tv.Networks[0].LogoPath)})
+	thumbs = append(thumbs, model.Thumb{Aspect: "clearlogo", Value: util.MakeImagePath(tv.Networks[0].LogoPath)})
 	// genSeasonPoster
 	// for collection
 	seasonPoster := make([]string, 0)
 	seasonNumber := make([]int, 0)
 	for i := 0; i < len(tv.Seasons); i++ {
-		poster := makeImagePath(tv.Seasons[i].PosterPath)
+		poster := util.MakeImagePath(tv.Seasons[i].PosterPath)
 		number := tv.Seasons[i].SeasonNumber
 
 		seasonPoster = append(seasonPoster, poster)
@@ -55,11 +56,11 @@ func NewTVNfo(tv *tmdb.TVDetails) {
 
 		thumbs = append(thumbs, model.Thumb{Aspect: "poster", Value: poster, Season: number, Type: "season"})
 	}
-	thumbs = append(thumbs, model.Thumb{Aspect: "poster", Value: makeImagePath(tv.PosterPath)})
+	thumbs = append(thumbs, model.Thumb{Aspect: "poster", Value: util.MakeImagePath(tv.PosterPath)})
 	// genActors
 	actors := make([]model.Actor, 0)
 	for _, actor := range tv.TVCreditsAppend.Credits.Cast {
-		actors = append(actors, model.Actor{Name: actor.Name, Role: actor.Character, Order: actor.Order, Thumb: model.Thumb{Value: makeImagePath(actor.ProfilePath)}})
+		actors = append(actors, model.Actor{Name: actor.Name, Role: actor.Character, Order: actor.Order, Thumb: model.Thumb{Value: util.MakeImagePath(actor.ProfilePath)}})
 	}
 	tvNfo := model.TVShow{
 		Title:         tv.Name,
@@ -73,7 +74,7 @@ func NewTVNfo(tv *tmdb.TVDetails) {
 		Genre:  genres,
 		Thumb:  thumbs,
 		Fanart: []model.Thumb{
-			model.Thumb{Value: makeImagePath(tv.BackdropPath)},
+			model.Thumb{Value: util.MakeImagePath(tv.BackdropPath)},
 		},
 		UniqueID: model.UniqueID{
 			Value:   strconv.FormatInt(tv.ID, 10),
@@ -105,9 +106,9 @@ func collectImages(name string, logo string, poster string, fanart string, seaso
 		seasonsImages[fmt.Sprintf("season0%d-poster.jpg", seasonNumber[i])] = seasonsPosters[i]
 	}
 	collection := model.TVCollection{
-		ClearLogo: makeImagePath(logo),
-		Poster:    makeImagePath(poster),
-		Fanart:    makeImagePath(fanart),
+		ClearLogo: util.MakeImagePath(logo),
+		Poster:    util.MakeImagePath(poster),
+		Fanart:    util.MakeImagePath(fanart),
 		Seasons:   seasonsImages,
 	}
 	downloadImages(name, &collection)
