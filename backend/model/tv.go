@@ -1,6 +1,8 @@
 package model
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+)
 
 type TVShow struct {
 	XMLName       xml.Name `xml:"tvshow"`

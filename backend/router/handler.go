@@ -5,6 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github/Yoak3n/anime-repository-web/backend/backthread"
 	"github/Yoak3n/anime-repository-web/config"
+	"github/Yoak3n/anime-repository-web/package/logger"
 	"github/Yoak3n/anime-repository-web/package/request"
 	"net/http"
 	"regexp"
@@ -30,6 +31,7 @@ func getTvInfo(c *gin.Context) {
 	idString := re.FindAllString(idTemp, -1)
 	id, err := strconv.Atoi(strings.Join(idString, ""))
 	if err != nil {
+		logger.ERROR.Println(err.Error())
 		fail(c, err.Error())
 	}
 	client := request.NewClient()
@@ -48,7 +50,6 @@ func getTvInfo(c *gin.Context) {
 	}
 	successWithData(c, string(marshal))
 }
-
 func getPaths(c *gin.Context) {
 	data := map[string]string{
 		"tv_path":    config.Conf.TVPath,
@@ -56,29 +57,73 @@ func getPaths(c *gin.Context) {
 	}
 	successWithData(c, data)
 }
-
 func changeTVPath(c *gin.Context) {
 	path := c.Param("path")
 	err := config.ChangeTVPath(path)
 	if err != nil {
+		logger.ERROR.Println(err.Error())
 		fail(c, err.Error())
+	} else {
+		success(c)
 	}
-	success(c)
-}
 
+}
 func changeMoviePath(c *gin.Context) {
 	path := c.Param("path")
 	err := config.ChangeMoviePath(path)
 	if err != nil {
+		logger.ERROR.Println(err.Error())
 		fail(c, err.Error())
+	} else {
+		success(c)
 	}
-	success(c)
+
 }
 func changeRawPath(c *gin.Context) {
 	path := c.Param("path")
 	err := config.ChangeRawPath(path)
 	if err != nil {
+		logger.ERROR.Println(err.Error())
 		fail(c, err.Error())
+	} else {
+		success(c)
+	}
+}
+func addRule(c *gin.Context) {
+	id := c.Query("id")
+	provider := c.Query("provider")
+	fileExtract := c.Query("file_extract")
+	season := c.Query("season")
+	language := c.Query("language")
+	episodeExtract := c.Query("episode_extract")
+	episodePosition := c.Query("episode_position")
+	episodeOffset := c.Query("episode_offset")
+
+	// default value
+	if provider == "" {
+		provider = "TMDB"
+	}
+	if language == "" {
+		language = "zh-CN"
+	}
+	if episodeExtract == "" {
+		episodeExtract = `\d+`
+	}
+	if episodePosition == "" {
+		episodePosition = "1"
+	}
+	if episodeOffset == "" {
+		episodeOffset = "0"
+	}
+	err := backthread.NewRule(id, provider, fileExtract, season, language, episodeExtract, episodePosition, episodeOffset)
+	if err != nil {
+		fail(c, err.Error())
+		logger.ERROR.Println(err.Error())
 	}
 	success(c)
+}
+func getRule(c *gin.Context) {
+	id := c.Param("id")
+	rule := backthread.GetRule(id)
+	successWithData(c, ExposeRule(rule))
 }

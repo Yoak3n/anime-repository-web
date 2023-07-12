@@ -1,6 +1,8 @@
 package item
 
-import "strings"
+import (
+	"strings"
+)
 
 type TVItem struct {
 	FullPath string

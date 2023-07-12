@@ -10,4 +10,4 @@
 
 ### Reference
 
-根据[Anime-Repository](https://github.com/Chikage0o0/Anime-Repository)用go仿写的一个前后端不分离的web应用，
+根据[Anime-Repository](https://github.com/Chikage0o0/Anime-Repository)用go实现的一个功能类似的前后端不分离的web项目

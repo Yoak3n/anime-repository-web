@@ -3,11 +3,19 @@ package router
 import "github.com/gin-gonic/gin"
 
 func response(c *gin.Context, code int, msg string, data interface{}) {
-	c.JSON(code, gin.H{
-		"code":    code,
-		"message": msg,
-		"data":    data,
-	})
+	if data == nil {
+		c.JSON(code, gin.H{
+			"code":    code,
+			"message": msg,
+		})
+	} else {
+		c.JSON(code, gin.H{
+			"code":    code,
+			"message": msg,
+			"data":    data,
+		})
+	}
+
 }
 
 func success(c *gin.Context) {
