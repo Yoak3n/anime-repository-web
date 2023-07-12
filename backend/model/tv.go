@@ -32,5 +32,5 @@ type TVCollection struct {
 	ClearLogo string `json:"clearlogo.png"`
 	Poster    string `json:"poster.jpg"`
 	Fanart    string `json:"fanart.jpg"`
-	Seasons   []map[string]string
+	Seasons   map[string]string
 }

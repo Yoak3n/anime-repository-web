@@ -4,7 +4,8 @@ import (
 	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"github/Yoak3n/anime-repository-web/config"
-	"github/Yoak3n/anime-repository-web/request"
+	"github/Yoak3n/anime-repository-web/package/request"
+	"github/Yoak3n/anime-repository-web/package/util"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -12,7 +13,10 @@ import (
 )
 
 func renderIndex(c *gin.Context) {
-	r.LoadHTMLFiles("resource/html/index.html")
+	r.LoadHTMLGlob("resource/html/index.html")
+	r.StaticFile("favicon.ico", "resource/html/favicon.ico")
+	r.Static("/style", "resource/style")
+	r.Static("/script", "resource/script")
 	c.HTML(http.StatusOK, "index.html", "")
 }
 
@@ -38,7 +42,7 @@ func getTvInfo(c *gin.Context) {
 	if err != nil {
 		fail(c, err.Error())
 	}
-
+	util.NewTVNfo(tvInfo)
 	marshal, err := json.Marshal(&tvInfo)
 	if err != nil {
 		return

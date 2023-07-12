@@ -5,12 +5,14 @@ import (
 	"encoding/xml"
 	"fmt"
 	tmdb "github.com/cyruzin/golang-tmdb"
+	"github/Yoak3n/anime-repository-web/backend/model"
 	"github/Yoak3n/anime-repository-web/config"
-	"github/Yoak3n/anime-repository-web/model"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"strconv"
+	"sync"
 )
 
 const (
@@ -73,13 +75,18 @@ func NewTVNfo(tv *tmdb.TVDetails) {
 		Fanart: []model.Thumb{
 			model.Thumb{Value: makeImagePath(tv.BackdropPath)},
 		},
+		UniqueID: model.UniqueID{
+			Value:   strconv.FormatInt(tv.ID, 10),
+			Type:    "tmdb",
+			Default: true,
+		},
 	}
 	nfoData, err := xml.Marshal(&tvNfo)
 	if err != nil {
 		log.Println("err")
 	}
 	go writeTVShowNfo(nfoData, tv.Name)
-	go collectImages(tv.Networks[0].LogoPath, tv.PosterPath, tv.BackdropPath, seasonPoster, seasonNumber)
+	go collectImages(tv.Name, tv.Networks[0].LogoPath, tv.PosterPath, tv.BackdropPath, seasonPoster, seasonNumber)
 
 }
 
@@ -92,12 +99,10 @@ func writeTVShowNfo(nfo []byte, title string) {
 	}
 }
 
-func collectImages(logo string, poster string, fanart string, seasonsPosters []string, seasonNumber []int) {
-	seasonsImages := make([]map[string]string, 0)
+func collectImages(name string, logo string, poster string, fanart string, seasonsPosters []string, seasonNumber []int) {
+	seasonsImages := make(map[string]string)
 	for i := 0; i < len(seasonsPosters); i++ {
-		seasonsImages = append(seasonsImages, map[string]string{
-			fmt.Sprintf("season0%d-poster.jpg", seasonNumber[i]): seasonsPosters[i],
-		})
+		seasonsImages[fmt.Sprintf("season0%d-poster.jpg", seasonNumber[i])] = seasonsPosters[i]
 	}
 	collection := model.TVCollection{
 		ClearLogo: makeImagePath(logo),
@@ -105,11 +110,49 @@ func collectImages(logo string, poster string, fanart string, seasonsPosters []s
 		Fanart:    makeImagePath(fanart),
 		Seasons:   seasonsImages,
 	}
-	downloadImages(&collection)
+	downloadImages(name, &collection)
 }
 
-func downloadImages(c *model.TVCollection) {
+func downloadImages(name string, c *model.TVCollection) {
 	// 同步or异步？——是否会被风控
+	wg := &sync.WaitGroup{}
+	wg.Add(3 + len(c.Seasons))
+
+	tvDir := fmt.Sprintf("%s/%s/", config.Conf.TVPath, name)
+	go func() {
+		defer wg.Done()
+		err := downloadImage(tvDir+"clearlogo.jpg", c.ClearLogo)
+		if err != nil {
+			log.Println(name, "clearlogo download error:", err)
+		}
+	}()
+	go func() {
+		defer wg.Done()
+		err := downloadImage(tvDir+"poster.jpg", c.Poster)
+		if err != nil {
+			log.Println(name, "poster download error:", err)
+		}
+	}()
+
+	go func() {
+		defer wg.Done()
+		err := downloadImage(tvDir+"fanart.jpg", c.Fanart)
+		if err != nil {
+			log.Println(name, "fanart download error:", err)
+		}
+	}()
+	for k, v := range c.Seasons {
+		key := k
+		value := v
+		go func() {
+			defer wg.Done()
+			err := downloadImage(fmt.Sprintf("%s/%s/%s", config.Conf.TVPath, name, key), value)
+			if err != nil {
+				log.Println(name, "season poster download error:", err)
+			}
+		}()
+	}
+	wg.Wait()
 
 }
 func downloadImage(path string, imgUrl string) error {
@@ -129,7 +172,7 @@ func downloadImage(path string, imgUrl string) error {
 	writer := bufio.NewWriter(file)
 	written, err := io.Copy(writer, reader)
 	if err != nil {
-		log.Println("写入文件错误：", err)
+		log.Println("write file error：", err)
 		return err
 	}
 	fmt.Printf("Total length: %d", written)

@@ -12,11 +12,6 @@ import (
 	"time"
 )
 
-var options = map[string]string{
-	"language":           "zh-CN",
-	"append_to_response": "credits,images",
-}
-
 func NewClient() *tmdb.Client {
 	TC, err := tmdb.Init(config.Conf.ApiKey)
 	if err != nil {

@@ -7,6 +7,7 @@ import (
 	tmdb "github.com/cyruzin/golang-tmdb"
 	"log"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -52,8 +53,9 @@ type UniqueID struct {
 }
 
 func main() {
-	get()
+	//get()
 	//write()
+	scan()
 }
 func get() {
 	client, err := tmdb.Init("e2fde5b39a4a7ae62fffaa548ea1b066")
@@ -123,4 +125,14 @@ func write() {
 	fmt.Printf(xml.Header)
 	fmt.Println(string(marshal))
 
+}
+
+func scan() {
+	dir, err := os.ReadDir("../")
+	if err != nil {
+		return
+	}
+	for _, dirEntry := range dir {
+		fmt.Println(dirEntry.Name())
+	}
 }
