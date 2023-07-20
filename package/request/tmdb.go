@@ -30,6 +30,11 @@ func NewClient() *tmdb.Client {
 	log.Println("TMDB Client initialized")
 	return TC
 }
+
+
+func GetVideoName(id string) (string, error) {
+		return "",nil
+}
 func NewToken() (string, error) {
 	res, err := http.Get(fmt.Sprintf("https://api.themoviedb.org/3/authentication/token/new?api_key=%s", config.Conf.ApiKey))
 	if err != nil {

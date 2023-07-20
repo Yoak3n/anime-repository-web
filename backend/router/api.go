@@ -26,6 +26,8 @@ func apiV1Path(v1 *gin.RouterGroup) {
 
 func apiV1Rule(v1 *gin.RouterGroup) {
 	rule := v1.Group("/rule")
-	rule.GET("/:id", getRule)
+	rule.GET("", getRule)
 	rule.POST("", addRule)
+	rule.PATCH("/:id", updateRule)
+	rule.DELETE("/:id", hiddenRule)
 }

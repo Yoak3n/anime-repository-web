@@ -2,6 +2,7 @@ package router
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/gin-gonic/gin"
 	"github/Yoak3n/anime-repository-web/backend/backthread"
 	"github/Yoak3n/anime-repository-web/config"
@@ -123,7 +124,29 @@ func addRule(c *gin.Context) {
 	success(c)
 }
 func getRule(c *gin.Context) {
-	id := c.Param("id")
-	rule := backthread.GetRule(id)
-	successWithData(c, ExposeRule(rule))
+	rules := backthread.GetRule()
+	data := make([]Rule, 0)
+	for _, rule := range rules {
+		if !rule.Hidden {
+			data = append(data, ExposeRule(rule))
+		}
+	}
+
+	successWithData(c, data)
+}
+func hiddenRule(c *gin.Context) {
+	id := c.Query("id")
+	did, err := strconv.Atoi(id)
+	if err != nil {
+		logger.ERROR.Println(errors.New("id is not int"))
+	}
+	err = backthread.HideRule(did)
+	if err != nil {
+		fail(c, err.Error())
+	} else {
+		success(c)
+	}
+}
+func updateRule(c *gin.Context) {
+
 }

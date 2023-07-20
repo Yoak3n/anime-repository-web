@@ -32,6 +32,7 @@ func Dispose(filePath string) {
 	}
 	for _, rule := range cache.Rules {
 		if rule.FileExtractReg.Match([]byte(filePath)) {
+			rule.Hidden = false
 			cache.MatchRules[filePath] = rule
 		}
 	}
@@ -62,17 +63,27 @@ func NewRule(id, provider, fileExtract, season, language, episodeExtract, episod
 		return errors.New("episode offset must be integer")
 	}
 	rule.EpisodeOffset = o
+	rule.Hidden = false
 	rule.ID = len(cache.Rules) + 1
 	// 后续会使用数据库，暂时就这样不考虑重复
 	cache.Rules = append(cache.Rules, rule)
 	return nil
 }
 
-func GetRule(vid string) *model.Rule {
+func GetRule() []*model.Rule {
+	rules := make([]*model.Rule, 0)
 	for _, rule := range cache.Rules {
-		if vid == rule.VID {
-			return rule
+		rules = append(rules, rule)
+	}
+	return rules
+}
+
+func HideRule(id int)error {
+	for _, rule := range cache.Rules {
+		if id == rule.ID{
+			rule.Hidden = true
+			return nil
 		}
 	}
-	return nil
+	return errors.New("rule not found")
 }

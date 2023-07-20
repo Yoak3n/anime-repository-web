@@ -34,12 +34,13 @@ func init() {
 	}
 	Conf.Port = v.GetInt("port")
 	Conf.ApiKey = v.GetString("apiKey")
+	// 呃，那这个代理用的是本地的还是服务器的呢？
 	parse, err := url.Parse(v.GetString("proxy"))
-
 	if err != nil {
 		log.Panic("请检查配置文件", err)
 	}
 	Conf.Proxy = parse
+
 	Conf.TVPath = v.GetString("tv_path")
 	Conf.MoviePath = v.GetString("movie_path")
 	Conf.Delay = v.GetInt64("delay")

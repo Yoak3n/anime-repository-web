@@ -12,4 +12,5 @@ type Rule struct {
 	EpisodeExtractReg *regexp.Regexp
 	EpisodePosition   int
 	EpisodeOffset     int
+	Hidden            bool
 }
