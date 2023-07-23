@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/gin-gonic/gin"
+	"github.com/tidwall/gjson"
 	"github/Yoak3n/anime-repository-web/backend/backthread"
 	"github/Yoak3n/anime-repository-web/config"
 	"github/Yoak3n/anime-repository-web/package/logger"
@@ -91,14 +92,16 @@ func changeRawPath(c *gin.Context) {
 	}
 }
 func addRule(c *gin.Context) {
-	id := c.Query("id")
-	provider := c.Query("provider")
-	fileExtract := c.Query("file_extract")
-	season := c.Query("season")
-	language := c.Query("language")
-	episodeExtract := c.Query("episode_extract")
-	episodePosition := c.Query("episode_position")
-	episodeOffset := c.Query("episode_offset")
+	rawJson, _ := c.GetRawData()
+	result := gjson.ParseBytes(rawJson)
+	id := result.Get("vid").String()
+	provider := result.Get("provider").String()
+	fileExtract := result.Get("file_extract").String()
+	season := result.Get("season").String()
+	language := result.Get("language").String()
+	episodeExtract := result.Get("episode_extract").String()
+	episodePosition := result.Get("episode_position").String()
+	episodeOffset := result.Get("episode_offset").String()
 
 	// default value
 	if provider == "" {
@@ -120,8 +123,10 @@ func addRule(c *gin.Context) {
 	if err != nil {
 		fail(c, err.Error())
 		logger.ERROR.Println(err.Error())
+	} else {
+		success(c)
 	}
-	success(c)
+
 }
 func getRule(c *gin.Context) {
 	rules := backthread.GetRule()
@@ -149,4 +154,9 @@ func hiddenRule(c *gin.Context) {
 }
 func updateRule(c *gin.Context) {
 
+}
+
+func getRaw(c *gin.Context) {
+	files := backthread.GetFiles()
+	successWithData(c, files)
 }

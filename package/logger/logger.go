@@ -29,7 +29,7 @@ func init() {
 	ERROR = log.New(io.MultiWriter(file, log.Writer()), "[ERROR] ", log.LstdFlags|log.Lmsgprefix|log.Lshortfile)
 }
 
-// logger内部定义无法使用Lshortfile
+// logger内部定义无法正常使用Lshortfile
 //func Info(v ...interface{}) {
 //	INFO.Println(v...)
 //}

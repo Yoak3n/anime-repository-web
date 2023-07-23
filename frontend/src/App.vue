@@ -37,7 +37,6 @@ const menuOptions: MenuOption[] = [
 ]
 
 onMounted(()=>{
-  activeKey.value = 'rule'
   collapsed.value = true
 })
 const onSetting = () =>{

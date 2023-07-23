@@ -5,6 +5,7 @@ import "github.com/gin-gonic/gin"
 func runController() {
 	r.GET("/", renderIndex)
 	r.Static("/assets", "resource/assets")
+	r.StaticFile("/vite.svg", "resource/vite.svg")
 	apiV1()
 }
 
@@ -13,6 +14,7 @@ func apiV1() {
 	v1.POST("/tv/:id/:language", getTvInfo)
 	apiV1Rule(v1)
 	apiV1Path(v1)
+	apiV1Raw(v1)
 }
 
 func apiV1Path(v1 *gin.RouterGroup) {
@@ -30,4 +32,9 @@ func apiV1Rule(v1 *gin.RouterGroup) {
 	rule.POST("", addRule)
 	rule.PATCH("/:id", updateRule)
 	rule.DELETE("/:id", hiddenRule)
+}
+
+func apiV1Raw(v1 *gin.RouterGroup) {
+	raw := v1.Group("/raw")
+	raw.GET("", getRaw)
 }

@@ -5,9 +5,9 @@ import (
 )
 
 type TVItem struct {
-	FullPath string
-	Name     string
-	Path     string
+	FullPath string `json:"full_path"`
+	Name     string `json:"name"`
+	Path     string `json:"path"`
 }
 
 func NewTVItem(fullPath string) *TVItem {

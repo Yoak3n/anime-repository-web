@@ -67,7 +67,15 @@ func NewRule(id, provider, fileExtract, season, language, episodeExtract, episod
 	rule.ID = len(cache.Rules) + 1
 	// 后续会使用数据库，暂时就这样不考虑重复
 	cache.Rules = append(cache.Rules, rule)
+
 	return nil
+}
+
+func GetFiles() (files []item.TVItem) {
+	for _, tvItem := range cache.TvFiles {
+		files = append(files, *tvItem)
+	}
+	return
 }
 
 func GetRule() []*model.Rule {
@@ -78,9 +86,9 @@ func GetRule() []*model.Rule {
 	return rules
 }
 
-func HideRule(id int)error {
+func HideRule(id int) error {
 	for _, rule := range cache.Rules {
-		if id == rule.ID{
+		if id == rule.ID {
 			rule.Hidden = true
 			return nil
 		}
