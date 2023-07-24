@@ -1,10 +1,13 @@
 FROM golang:alpine as builder
 LABEL authors="Yoake"
 RUN apk add --no-cache nodejs
+RUN mkdir /app/anime-repostory-web
 WORKDIR /app/anime-repostory-web
 COPY . .
-RUN cd frontend && npm install && npm run build
-RUN cd ../ && go build -o main
+WORKDIR frontend
+RUN npm install && npm run build
+WORKDIR /app/anime-repostory-web
+RUN go build -o main
 
 FROM alpine:latest as runtime
 WORKDIR /app/anime-repostory-web
