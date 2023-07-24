@@ -1,6 +1,6 @@
 FROM golang:alpine as builder
 LABEL authors="Yoake"
-RUN apk add --no-cache nodejs
+RUN apk add --no-cache nodejs npm
 WORKDIR /app/anime-repostory-web
 COPY . .
 WORKDIR frontend
