@@ -8,7 +8,7 @@ RUN npm install && npm run build
 WORKDIR /app/anime-repostory-web
 RUN go build -o main
 
-FROM alpine:latest as runtime
+FROM scratch as runtime
 WORKDIR /app/anime-repostory-web
 COPY --from=builder  /app/anime-repostory-web/frontend/dist/ ./resouce/
 COPY --from=builder /app/anime-repostory-web/main  main
