@@ -1,0 +1,11 @@
+version: "3"
+services:
+  anime-repository-web:
+    image: yoaken/anime-repository-web:latest
+    container_name: anime-repository-web
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./config.yml ./config.yml
+    environment:
+      - GIN_MODE=release

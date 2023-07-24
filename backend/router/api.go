@@ -12,9 +12,16 @@ func runController() {
 func apiV1() {
 	v1 := r.Group("/v1")
 	v1.POST("/tv/:id/:language", getTvInfo)
+	apiV1Config(v1)
 	apiV1Rule(v1)
 	apiV1Path(v1)
 	apiV1Raw(v1)
+}
+
+func apiV1Config(v1 *gin.RouterGroup) {
+	config := v1.Group("/config")
+	config.GET("", getConfig)
+	config.POST("", changeConfig)
 }
 
 func apiV1Path(v1 *gin.RouterGroup) {

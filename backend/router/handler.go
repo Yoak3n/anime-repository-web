@@ -52,6 +52,31 @@ func getTvInfo(c *gin.Context) {
 	}
 	successWithData(c, string(marshal))
 }
+
+func getConfig(c *gin.Context) {
+	successWithData(c, config.Conf)
+}
+func changeConfig(c *gin.Context) {
+	rawJson, _ := c.GetRawData()
+	if rawJson != nil {
+		response(c, http.StatusInternalServerError, "Get json error", nil)
+	} else {
+		result := gjson.ParseBytes(rawJson)
+		key := result.Get("key").String()
+		useProxy := result.Get("use_proxy").Bool()
+		proxyUrl := result.Get("proxy_url").String()
+		rawPath := result.Get("raw_path").String()
+		tvPath := result.Get("tv_path").String()
+		moviePath := result.Get("movie_path").String()
+		delay := result.Get("delay").Int()
+		err := config.ChangeAllConfig(key, useProxy, proxyUrl, rawPath, tvPath, moviePath, delay)
+		if err != nil {
+			response(c, http.StatusInternalServerError, "Change config error", nil)
+		} else {
+			success(c)
+		}
+	}
+}
 func getPaths(c *gin.Context) {
 	data := map[string]string{
 		"tv_path":    config.Conf.TVPath,

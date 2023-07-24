@@ -5,8 +5,10 @@ import (
 	"encoding/xml"
 	"fmt"
 	tmdb "github.com/cyruzin/golang-tmdb"
+	"github.com/spf13/viper"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 )
@@ -55,7 +57,8 @@ type UniqueID struct {
 func main() {
 	//get()
 	//write()
-	scan()
+	//scan()
+	writeConfig()
 }
 func get() {
 	client, err := tmdb.Init("e2fde5b39a4a7ae62fffaa548ea1b066")
@@ -134,5 +137,24 @@ func scan() {
 	}
 	for _, dirEntry := range dir {
 		fmt.Println(dirEntry.Name())
+	}
+}
+func writeConfig() {
+	type Configuration struct {
+		Port      int      `yaml:"port"`
+		ApiKey    string   `yaml:"apiKey"`
+		Proxy     *url.URL `yaml:"proxy"`
+		RawPath   string   `yaml:"raw_path"`
+		TVPath    string   `yaml:"tv_path"`
+		MoviePath string   `yaml:"movie_path"`
+		Delay     int64    `yaml:"delay"`
+	}
+	config := new(Configuration)
+	config.Port = 8080
+	viper.SetConfigType("yaml")
+	viper.AddConfigPath(".")
+	err := viper.WriteConfig()
+	if err != nil {
+		println(err.Error())
 	}
 }
