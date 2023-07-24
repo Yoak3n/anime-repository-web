@@ -10,6 +10,6 @@ RUN go build -o main
 
 FROM alpine:latest as runtime
 WORKDIR /app/anime-repostory-web
-COPY --from=builder  /app/anime-repostory-web/frontend/disk/ ./resouce/
+COPY --from=builder  /app/anime-repostory-web/frontend/dist/ ./resouce/
 COPY --from=builder /app/anime-repostory-web/main  main
 CMD ["main"]
