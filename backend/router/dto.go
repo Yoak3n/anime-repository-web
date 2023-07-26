@@ -3,7 +3,7 @@ package router
 import "github/Yoak3n/anime-repository-web/backend/model"
 
 type Rule struct {
-	ID                int    `json:"id"`
+	ID                uint   `json:"id"`
 	VID               string `json:"vid"`
 	Provider          string `json:"provider"`
 	FileExtractReg    string `json:"file_extract_reg"`
