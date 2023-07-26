@@ -7,6 +7,7 @@ import (
 	tmdb "github.com/cyruzin/golang-tmdb"
 	"github/Yoak3n/anime-repository-web/backend/model"
 	"github/Yoak3n/anime-repository-web/config"
+	"github/Yoak3n/anime-repository-web/package/logger"
 	"github/Yoak3n/anime-repository-web/package/util"
 	"io"
 	"log"
@@ -41,7 +42,7 @@ func NewTVNfo(tv *tmdb.TVDetails) {
 	}
 	// genThumbs
 	thumbs := make([]model.Thumb, 0)
-	// clearlogo
+	// genClearlogo
 	thumbs = append(thumbs, model.Thumb{Aspect: "clearlogo", Value: util.MakeImagePath(tv.Networks[0].LogoPath)})
 	// genSeasonPoster
 	// for collection
@@ -88,7 +89,6 @@ func NewTVNfo(tv *tmdb.TVDetails) {
 	}
 	go writeTVShowNfo(nfoData, tv.Name)
 	go collectImages(tv.Name, tv.Networks[0].LogoPath, tv.PosterPath, tv.BackdropPath, seasonPoster, seasonNumber)
-
 }
 
 func writeTVShowNfo(nfo []byte, title string) {
@@ -103,7 +103,7 @@ func writeTVShowNfo(nfo []byte, title string) {
 func collectImages(name string, logo string, poster string, fanart string, seasonsPosters []string, seasonNumber []int) {
 	seasonsImages := make(map[string]string)
 	for i := 0; i < len(seasonsPosters); i++ {
-		seasonsImages[fmt.Sprintf("season0%d-poster.jpg", seasonNumber[i])] = seasonsPosters[i]
+		seasonsImages[fmt.Sprintf("season%d-poster.jpg", seasonNumber[i])] = seasonsPosters[i]
 	}
 	collection := model.TVCollection{
 		ClearLogo: util.MakeImagePath(logo),
@@ -139,7 +139,7 @@ func downloadImages(name string, c *model.TVCollection) {
 		defer wg.Done()
 		err := downloadImage(tvDir+"fanart.jpg", c.Fanart)
 		if err != nil {
-			log.Println(name, "fanart download error:", err)
+			logger.INFO.Println(name, "fanart download error:", err)
 		}
 	}()
 	for k, v := range c.Seasons {
@@ -149,7 +149,7 @@ func downloadImages(name string, c *model.TVCollection) {
 			defer wg.Done()
 			err := downloadImage(fmt.Sprintf("%s/%s/%s", config.Conf.TVPath, name, key), value)
 			if err != nil {
-				log.Println(name, "season poster download error:", err)
+				logger.INFO.Println(name, "season poster download error:", err)
 			}
 		}()
 	}
@@ -166,7 +166,7 @@ func downloadImage(path string, imgUrl string) error {
 
 	file, err := os.Create(path)
 	if err != nil {
-		log.Println(err)
+		logger.ERROR.Println(err)
 		return err
 	}
 

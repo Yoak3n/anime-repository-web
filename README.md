@@ -5,8 +5,10 @@
     <p align="center">just a practice work for self-entertainment. </p>
 <p>
 
+---
+developing...  
+next to refactor calling api of tmdb
 ### Usage
-
 
 ### Reference
 

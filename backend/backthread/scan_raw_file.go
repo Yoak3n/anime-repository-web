@@ -3,6 +3,7 @@ package backthread
 import (
 	"errors"
 	"fmt"
+	"github/Yoak3n/anime-repository-web/backend/item"
 	"github/Yoak3n/anime-repository-web/config"
 	"github/Yoak3n/anime-repository-web/package/logger"
 	"log"
@@ -15,21 +16,24 @@ var delay int64
 
 func ScanList() {
 	for {
+		time.Sleep(time.Second * time.Duration(delay))
 		delay = config.Conf.Delay
 		videoFiles, err := Scan()
 		if err != nil {
 			log.Println(err)
-			time.Sleep(time.Second * time.Duration(delay))
 			continue
 		}
 		for _, file := range videoFiles {
 			Dispose(file)
 		}
-		time.Sleep(time.Second * time.Duration(delay))
+
 	}
 }
 
 func Scan() ([]string, error) {
+	if config.Conf.RawPath == "" {
+		return nil, errors.New("指定文件目录不能为空")
+	}
 	_, err := os.Stat(config.Conf.RawPath)
 	if err != nil {
 		return nil, errors.New("指定文件目录不存在")
@@ -44,6 +48,13 @@ func Scan() ([]string, error) {
 		}
 	}
 	return videoFiles, nil
+}
+
+func GetFiles() (files []item.TVItem) {
+	for _, tvItem := range cache.TvFiles {
+		files = append(files, *tvItem)
+	}
+	return
 }
 
 func scanLoop(path string, name string) (videoFiles []string, err error) {

@@ -3,8 +3,9 @@ package model
 import "regexp"
 
 type Rule struct {
-	ID                int
+	ID                uint
 	VID               string
+	Name              string
 	Provider          string
 	FileExtractReg    *regexp.Regexp
 	Season            int

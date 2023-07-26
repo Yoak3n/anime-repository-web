@@ -22,6 +22,7 @@ func ChangeAllConfig(key string, use bool, proxy string, rawPath string, tVPath 
 	v.Set("tv_path", tVPath)
 	v.Set("movie_path", moviePath)
 	v.Set("delay", delay)
+	// 既然下面每个配置的修改都要重新写一次，那就不在修改全部配置这里调用下面的函数了，仅作备用
 	err = v.WriteConfig()
 	if err != nil {
 		return err

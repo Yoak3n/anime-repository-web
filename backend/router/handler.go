@@ -36,7 +36,7 @@ func getTvInfo(c *gin.Context) {
 		logger.ERROR.Println(err.Error())
 		fail(c, err.Error())
 	}
-	client := request.NewClient()
+	client := request.GetClient()
 	options := map[string]string{
 		"language":           language,
 		"append_to_response": "credits",
@@ -170,7 +170,7 @@ func hiddenRule(c *gin.Context) {
 	if err != nil {
 		logger.ERROR.Println(errors.New("id is not int"))
 	}
-	err = backthread.HideRule(did)
+	err = backthread.HideRule(uint(did))
 	if err != nil {
 		fail(c, err.Error())
 	} else {
@@ -178,7 +178,25 @@ func hiddenRule(c *gin.Context) {
 	}
 }
 func updateRule(c *gin.Context) {
-
+	temp := c.Param("id")
+	id, err := strconv.Atoi(temp)
+	fail(c, err.Error())
+	rawJson, _ := c.GetRawData()
+	result := gjson.ParseBytes(rawJson)
+	vid := result.Get("vid").String()
+	provider := result.Get("provider").String()
+	fileExtract := result.Get("file_extract").String()
+	season := result.Get("season").String()
+	language := result.Get("language").String()
+	episodeExtract := result.Get("episode_extract").String()
+	episodePosition := result.Get("episode_position").String()
+	episodeOffset := result.Get("episode_offset").String()
+	err = backthread.ModifyRule(int64(id), vid, provider, fileExtract, season, language, episodeExtract, episodePosition, episodeOffset)
+	if err != nil {
+		fail(c, err.Error())
+	} else {
+		success(c)
+	}
 }
 
 func getRaw(c *gin.Context) {

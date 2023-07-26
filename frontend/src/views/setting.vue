@@ -98,7 +98,7 @@ const saveSetting = () => {
     })
 }
 
-const loadSetting = () => {
+const  loadSetting = () => {
     reqGetSetting().then((res) => {
         if (res.status == 200 && res.data.code == 200) {
             configData.value = res.data.data
