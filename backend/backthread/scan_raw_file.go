@@ -6,7 +6,6 @@ import (
 	"github/Yoak3n/anime-repository-web/backend/item"
 	"github/Yoak3n/anime-repository-web/config"
 	"github/Yoak3n/anime-repository-web/package/logger"
-	"log"
 	"os"
 	"strings"
 	"time"
@@ -20,13 +19,16 @@ func ScanList() {
 		delay = config.Conf.Delay
 		videoFiles, err := Scan()
 		if err != nil {
-			log.Println(err)
+			logger.ERROR.Println(err)
 			continue
 		}
 		for _, file := range videoFiles {
 			Dispose(file)
 		}
-
+		err = WorkOnMatchedCache()
+		if err != nil {
+			logger.ERROR.Println(err)
+		}
 	}
 }
 
