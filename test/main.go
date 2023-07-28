@@ -6,6 +6,7 @@ import (
 	"fmt"
 	tmdb "github.com/cyruzin/golang-tmdb"
 	"github.com/spf13/viper"
+	"io"
 	"log"
 	"net/http"
 	"net/url"
@@ -49,17 +50,18 @@ type Thumb struct {
 	Preview string `xml:"preview,omitempty"`
 	Value   string `xml:",innerxml"`
 }
-type UniqueID struct {
-	Default bool
-	Value   string
-}
 
 func main() {
 	//get()
 	//write()
 	//scan()
-	writeConfig()
+	//writeConfig()
+	_, err := GetVideoTVName("123249", "zh")
+	if err != nil {
+		log.Println(err)
+	}
 }
+
 func get() {
 	client, err := tmdb.Init("e2fde5b39a4a7ae62fffaa548ea1b066")
 	if err != nil {
@@ -157,4 +159,31 @@ func writeConfig() {
 	if err != nil {
 		println(err.Error())
 	}
+}
+
+func GetVideoTVName(vid string, language string) (string, error) {
+	uri := fmt.Sprintf("https://api.themoviedb.org/3/tv/%s?language=%s&api_key=e2fde5b39a4a7ae62fffaa548ea1b066", vid, language)
+	proxyUrl, err := url.Parse("http://localhost:7890")
+	if err != nil {
+		return "", err
+	}
+	client := http.Client{
+		Timeout: time.Second * 5,
+		Transport: &http.Transport{
+			MaxIdleConns:    10,
+			IdleConnTimeout: 15 * time.Second,
+			Proxy:           http.ProxyURL(proxyUrl),
+		},
+	}
+	res, err := client.Get(uri)
+	if err != nil || res.StatusCode != 200 {
+		return "", err
+	}
+	defer res.Body.Close()
+	buf, err := io.ReadAll(res.Body)
+	if err != nil {
+		return "", err
+	}
+	log.Println(string(buf))
+	return "", nil
 }

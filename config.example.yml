@@ -3,6 +3,7 @@ port: 8080
 # tmdb api key
 api_key: ""
 # http proxy address
+use_proxy: true
 proxy: "http://127.0.0.1:7890"
 # path of unrecognized files
 raw_path: C:\Desktop

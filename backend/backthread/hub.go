@@ -2,7 +2,6 @@ package backthread
 
 import (
 	"fmt"
-	"github/Yoak3n/anime-repository-web/backend/item"
 	"github/Yoak3n/anime-repository-web/backend/model"
 	"github/Yoak3n/anime-repository-web/config"
 	"github/Yoak3n/anime-repository-web/package/request"
@@ -13,7 +12,7 @@ import (
 )
 
 type Cache struct {
-	TvFiles    map[string]*item.TVItem
+	TvFiles    map[string]*model.TVItem
 	MatchRules map[string]*model.Rule
 	Recognized map[string]bool
 	Rules      []*model.Rule
@@ -24,7 +23,7 @@ var cache *Cache
 
 func init() {
 	cache = &Cache{
-		TvFiles:    make(map[string]*item.TVItem),
+		TvFiles:    make(map[string]*model.TVItem),
 		MatchRules: make(map[string]*model.Rule),
 		Rules:      make([]*model.Rule, 0),
 	}
@@ -42,7 +41,7 @@ func Dispose(filePath string) {
 			cache.MatchRules[filePath] = rule
 		}
 	}
-	i := item.NewTVItem(filePath)
+	i := model.NewTVItem(filePath)
 	cache.TvFiles[filePath] = i
 }
 
