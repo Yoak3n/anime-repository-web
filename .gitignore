@@ -1,6 +1,8 @@
 moviedetails.json
 tvdetails.json
 *.exe
+
 test/
+
 resource/*
 config.yml
