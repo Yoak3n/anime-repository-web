@@ -85,7 +85,7 @@ func NewTVNfo(tv *tmdb.TVDetails) {
 	}
 	nfoData, err := xml.Marshal(&tvNfo)
 	if err != nil {
-		log.Println("err")
+		logger.ERROR.Println(err)
 	}
 	go writeTVShowNfo(nfoData, tv.Name)
 	go collectImages(tv.Name, tv.Networks[0].LogoPath, tv.PosterPath, tv.BackdropPath, seasonPoster, seasonNumber)

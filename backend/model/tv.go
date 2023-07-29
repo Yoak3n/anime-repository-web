@@ -63,6 +63,7 @@ type TVEpisode struct {
 	Season         int64    `xml:"season"`
 	Episode        int64    `xml:"episode"`
 	DisplaySeason  int64    `xml:"displayseason"`
+	Plot           string   `xml:"plot"`
 	DisplayEpisode int64    `xml:"displayepisode"`
 	UniqueID       UniqueID `xml:"uniqueid"`
 	Aired          string   `xml:"aired"`
