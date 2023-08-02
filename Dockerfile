@@ -8,7 +8,7 @@ RUN npm install && npm run build
 WORKDIR /app/anime-repostory-web
 RUN go build -o main
 
-FROM scratch as runtime
+FROM nouchka/sqlite3 as runtime
 WORKDIR /app/anime-repostory-web
 COPY --from=builder  /app/anime-repostory-web/frontend/dist/ ./resouce/
 COPY --from=builder /app/anime-repostory-web/config.example.yml  config.yml

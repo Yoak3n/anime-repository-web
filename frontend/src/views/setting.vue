@@ -16,7 +16,7 @@
                 <n-input placeholder="" v-model:value="configData.raw_path"></n-input>
             </n-form-item>
             <n-form-item label="电影文件转移路径">
-                <n-input placeholder="" v-model:value="configData.tv_path"></n-input>
+                <n-input placeholder="" v-model:value="configData.movie_path"></n-input>
             </n-form-item>
             <n-form-item label="电视文件转移路径">
                 <n-input placeholder="" v-model:value="configData.tv_path"></n-input>

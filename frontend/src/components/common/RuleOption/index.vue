@@ -5,7 +5,7 @@
                 <n-form-item label="VID">
                     <n-input placeholder="请输入数据库的视频id" style="width: 12rem;" v-model:value="model.vid">
                         <template #suffix>
-                            <n-button text>
+                            <n-button text @click="GetTvName">
                                 <n-icon :component="Search">
                                 </n-icon>
                             </n-button>
@@ -54,7 +54,7 @@
                     <n-button type="error" ghost size="large" style="width: 10rem;" @click="resetRule">重置</n-button>
                 </n-form-item>
                 <n-form-item :show-feedback="false" :show-label="false">
-                    <n-button type="success" ghost size="large" style="width: 10rem;" @click="RuleAciton"
+                    <n-button type="success" ghost size="large" style="width: 10rem;" @click="RuleAction"
                         :loading="loading">提交</n-button>
                 </n-form-item>
             </n-space>
@@ -78,7 +78,12 @@ let props = defineProps(['addRule','data','modify'])
 let {data} = toRefs(props)
 let model = ref<ruleRequestData>(defaultRule)
 
-const RuleAciton = () => {
+
+const GetTvName = () => {
+
+}
+
+const RuleAction = () => {
     loading.value = true
     let value: ruleRequestData = model.value
     let promise: Promise<AxiosResponse<RuleResponse, any>> 

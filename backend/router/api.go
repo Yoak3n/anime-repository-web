@@ -9,7 +9,6 @@ import (
 func renderIndex(c *gin.Context) {
 	r.LoadHTMLFiles("resource/index.html")
 	//r.StaticFile("favicon.ico", "resource/html/favicon.ico")
-
 	c.HTML(http.StatusOK, "index.html", "")
 }
 
@@ -22,6 +21,7 @@ func runController() {
 
 func apiV1() {
 	v1 := r.Group("/v1")
+
 	v1.POST("/tv/:id/:language", handler.GetTvInfo)
 	apiV1Config(v1)
 	apiV1Rule(v1)
@@ -31,6 +31,7 @@ func apiV1() {
 
 func apiV1Config(v1 *gin.RouterGroup) {
 	config := v1.Group("/config")
+
 	config.GET("", handler.GetConfig)
 	config.POST("", handler.ChangeConfig)
 }
@@ -46,6 +47,7 @@ func apiV1Path(v1 *gin.RouterGroup) {
 
 func apiV1Rule(v1 *gin.RouterGroup) {
 	rule := v1.Group("/rule")
+
 	rule.GET("", handler.GetRule)
 	rule.POST("", handler.AddRule)
 	rule.PATCH("/:id", handler.UpdateRule)
@@ -54,6 +56,7 @@ func apiV1Rule(v1 *gin.RouterGroup) {
 
 func apiV1Raw(v1 *gin.RouterGroup) {
 	raw := v1.Group("/raw")
+
 	raw.GET("", handler.GetRaw)
 	raw.GET("/tv/:vid", handler.GetRawTVName)
 }

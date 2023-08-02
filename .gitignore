@@ -1,8 +1,7 @@
 moviedetails.json
 tvdetails.json
 *.exe
-
 test/
-
+data/
 resource/*
 config.yml

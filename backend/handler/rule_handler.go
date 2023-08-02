@@ -14,8 +14,9 @@ func AddRule(c *gin.Context) {
 	rawJson, _ := c.GetRawData()
 	result := gjson.ParseBytes(rawJson)
 	id := result.Get("vid").String()
+	name := result.Get("name").String()
 	provider := result.Get("provider").String()
-	fileExtract := result.Get("file_extract").String()
+	fileExtract := result.Get("file_extract_reg").String()
 	season := result.Get("season").String()
 	language := result.Get("language").String()
 	episodeExtract := result.Get("episode_extract").String()
@@ -27,7 +28,7 @@ func AddRule(c *gin.Context) {
 		provider = "TMDB"
 	}
 	if language == "" {
-		language = "zh-CN"
+		language = "zh"
 	}
 	if episodeExtract == "" {
 		episodeExtract = `\d+`
@@ -38,10 +39,10 @@ func AddRule(c *gin.Context) {
 	if episodeOffset == "" {
 		episodeOffset = "0"
 	}
-	err := backthread.NewRule(id, provider, fileExtract, season, language, episodeExtract, episodePosition, episodeOffset)
+	err := backthread.NewRule(id, name, provider, fileExtract, season, language, episodeExtract, episodePosition, episodeOffset)
 	if err != nil {
-		response.Fail(c, err.Error())
 		logger.ERROR.Println(err.Error())
+		response.Fail(c, err.Error())
 	} else {
 		response.Success(c)
 	}
@@ -64,12 +65,9 @@ func HiddenRule(c *gin.Context) {
 	if err != nil {
 		logger.ERROR.Println(errors.New("id is not int"))
 	}
-	err = backthread.HideRule(uint(did))
-	if err != nil {
-		response.Fail(c, err.Error())
-	} else {
-		response.Success(c)
-	}
+	backthread.HideRule(uint(did))
+	response.Success(c)
+
 }
 func UpdateRule(c *gin.Context) {
 	temp := c.Param("id")
@@ -78,6 +76,7 @@ func UpdateRule(c *gin.Context) {
 	rawJson, _ := c.GetRawData()
 	result := gjson.ParseBytes(rawJson)
 	vid := result.Get("vid").String()
+	name := result.Get("name").String()
 	provider := result.Get("provider").String()
 	fileExtract := result.Get("file_extract").String()
 	season := result.Get("season").String()
@@ -85,7 +84,7 @@ func UpdateRule(c *gin.Context) {
 	episodeExtract := result.Get("episode_extract").String()
 	episodePosition := result.Get("episode_position").String()
 	episodeOffset := result.Get("episode_offset").String()
-	err = backthread.ModifyRule(int64(id), vid, provider, fileExtract, season, language, episodeExtract, episodePosition, episodeOffset)
+	err = backthread.ModifyRule(uint(id), vid, name, provider, fileExtract, season, language, episodeExtract, episodePosition, episodeOffset)
 	if err != nil {
 		response.Fail(c, err.Error())
 	} else {

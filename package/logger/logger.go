@@ -15,7 +15,6 @@ var (
 )
 
 func init() {
-	util.CreateDirNotExists("data")
 	util.CreateDirNotExists("data/logs")
 	file, err := os.OpenFile("data/logs/errors.log",
 		os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)

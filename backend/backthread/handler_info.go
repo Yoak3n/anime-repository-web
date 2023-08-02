@@ -3,6 +3,7 @@ package backthread
 import (
 	"bufio"
 	"encoding/xml"
+	"errors"
 	"fmt"
 	tmdb "github.com/cyruzin/golang-tmdb"
 	"github/Yoak3n/anime-repository-web/backend/model"
@@ -21,7 +22,10 @@ const (
 	themovidb = "themovidb"
 )
 
-func NewTVNfo(tv *tmdb.TVDetails) {
+func NewTVNfo(tv *tmdb.TVDetails) error {
+	if tv == nil {
+		return errors.New("tv is nil")
+	}
 	// genRatings
 	ratings := model.Rating{
 		Name:    themovidb,
@@ -42,57 +46,111 @@ func NewTVNfo(tv *tmdb.TVDetails) {
 	}
 	// genThumbs
 	thumbs := make([]model.Thumb, 0)
-	// genClearlogo
-	thumbs = append(thumbs, model.Thumb{Aspect: "clearlogo", Value: util.MakeImagePath(tv.Networks[0].LogoPath)})
-	// genSeasonPoster
-	// for collection
-	seasonPoster := make([]string, 0)
-	seasonNumber := make([]int, 0)
-	for i := 0; i < len(tv.Seasons); i++ {
-		poster := util.MakeImagePath(tv.Seasons[i].PosterPath)
-		number := tv.Seasons[i].SeasonNumber
+	if len(tv.Networks) > 0 {
+		// genClearlogo
+		thumbs = append(thumbs, model.Thumb{Aspect: "clearlogo", Value: util.MakeImagePath(tv.Networks[0].LogoPath)})
+		// genSeasonPoster
+		// for collection
+		seasonPoster := make([]string, 0)
+		seasonNumber := make([]int, 0)
+		for i := 0; i < len(tv.Seasons); i++ {
+			poster := util.MakeImagePath(tv.Seasons[i].PosterPath)
+			number := tv.Seasons[i].SeasonNumber
 
-		seasonPoster = append(seasonPoster, poster)
-		seasonNumber = append(seasonNumber, number)
+			seasonPoster = append(seasonPoster, poster)
+			seasonNumber = append(seasonNumber, number)
 
-		thumbs = append(thumbs, model.Thumb{Aspect: "poster", Value: poster, Season: number, Type: "season"})
+			thumbs = append(thumbs, model.Thumb{Aspect: "poster", Value: poster, Season: number, Type: "season"})
+		}
+		thumbs = append(thumbs, model.Thumb{Aspect: "poster", Value: util.MakeImagePath(tv.PosterPath)})
+		// genActors
+		actors := make([]model.Actor, 0)
+		for _, actor := range tv.TVCreditsAppend.Credits.Cast {
+			actors = append(actors, model.Actor{Name: actor.Name, Role: actor.Character, Order: actor.Order, Thumb: model.Thumb{Value: util.MakeImagePath(actor.ProfilePath)}})
+		}
+		tvNfo := model.TVShow{
+			Title:         tv.Name,
+			OriginalTitle: tv.OriginalName,
+			Premiered:     tv.FirstAirDate,
+			Ratings: model.Ratings{
+				Rating: []model.Rating{ratings},
+			},
+			Plot:   tv.Overview,
+			Studio: studios,
+			Genre:  genres,
+			Thumb:  thumbs,
+			Fanart: []model.Thumb{
+				model.Thumb{
+					Value: util.MakeImagePath(tv.BackdropPath),
+				},
+			},
+			UniqueID: model.UniqueID{
+				Value:   strconv.FormatInt(tv.ID, 10),
+				Type:    "tmdb",
+				Default: true,
+			},
+		}
+		nfoData, err := xml.Marshal(&tvNfo)
+		if err != nil {
+			logger.ERROR.Println(err)
+		}
+		logger.WARN.Println(string(nfoData))
+		go writeTVShowNfo(nfoData, tv.Name)
+		go collectImages(tv.Name, util.MakeImagePath(tv.Networks[0].LogoPath), util.MakeImagePath(tv.PosterPath), util.MakeImagePath(tv.BackdropPath), seasonPoster, seasonNumber)
+	} else {
+		seasonPoster := make([]string, 0)
+		seasonNumber := make([]int, 0)
+		for i := 0; i < len(tv.Seasons); i++ {
+			poster := util.MakeImagePath(tv.Seasons[i].PosterPath)
+			number := tv.Seasons[i].SeasonNumber
+
+			seasonPoster = append(seasonPoster, poster)
+			seasonNumber = append(seasonNumber, number)
+
+			thumbs = append(thumbs, model.Thumb{Aspect: "poster", Value: poster, Season: number, Type: "season"})
+		}
+		thumbs = append(thumbs, model.Thumb{Aspect: "poster", Value: util.MakeImagePath(tv.PosterPath)})
+		// genActors
+		actors := make([]model.Actor, 0)
+		for _, actor := range tv.TVCreditsAppend.Credits.Cast {
+			actors = append(actors, model.Actor{Name: actor.Name, Role: actor.Character, Order: actor.Order, Thumb: model.Thumb{Value: util.MakeImagePath(actor.ProfilePath)}})
+		}
+		tvNfo := model.TVShow{
+			Title:         tv.Name,
+			OriginalTitle: tv.OriginalName,
+			Premiered:     tv.FirstAirDate,
+			Ratings: model.Ratings{
+				Rating: []model.Rating{ratings},
+			},
+			Plot:   tv.Overview,
+			Studio: studios,
+			Genre:  genres,
+			Thumb:  thumbs,
+			Fanart: []model.Thumb{
+				model.Thumb{
+					Value: util.MakeImagePath(tv.BackdropPath),
+				},
+			},
+			UniqueID: model.UniqueID{
+				Value:   strconv.FormatInt(tv.ID, 10),
+				Type:    "tmdb",
+				Default: true,
+			},
+		}
+		nfoData, err := xml.Marshal(&tvNfo)
+		if err != nil {
+			logger.ERROR.Println(err)
+		}
+		logger.WARN.Println(string(nfoData))
+		go writeTVShowNfo(nfoData, tv.Name)
+		go collectImages(tv.Name, "", tv.PosterPath, tv.BackdropPath, seasonPoster, seasonNumber)
 	}
-	thumbs = append(thumbs, model.Thumb{Aspect: "poster", Value: util.MakeImagePath(tv.PosterPath)})
-	// genActors
-	actors := make([]model.Actor, 0)
-	for _, actor := range tv.TVCreditsAppend.Credits.Cast {
-		actors = append(actors, model.Actor{Name: actor.Name, Role: actor.Character, Order: actor.Order, Thumb: model.Thumb{Value: util.MakeImagePath(actor.ProfilePath)}})
-	}
-	tvNfo := model.TVShow{
-		Title:         tv.Name,
-		OriginalTitle: tv.OriginalName,
-		Premiered:     tv.FirstAirDate,
-		Ratings: model.Ratings{
-			Rating: []model.Rating{ratings},
-		},
-		Plot:   tv.Overview,
-		Studio: studios,
-		Genre:  genres,
-		Thumb:  thumbs,
-		Fanart: []model.Thumb{
-			model.Thumb{Value: util.MakeImagePath(tv.BackdropPath)},
-		},
-		UniqueID: model.UniqueID{
-			Value:   strconv.FormatInt(tv.ID, 10),
-			Type:    "tmdb",
-			Default: true,
-		},
-	}
-	nfoData, err := xml.Marshal(&tvNfo)
-	if err != nil {
-		logger.ERROR.Println(err)
-	}
-	go writeTVShowNfo(nfoData, tv.Name)
-	go collectImages(tv.Name, tv.Networks[0].LogoPath, tv.PosterPath, tv.BackdropPath, seasonPoster, seasonNumber)
+
+	return nil
 }
 
 func writeTVShowNfo(nfo []byte, title string) {
-	HEADER := []byte(`<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>`)
+	HEADER := []byte(`<?xml version="0.0" encoding="UTF-8" standalone="yes" ?>`)
 	data := append(HEADER, nfo...)
 	err := os.WriteFile(fmt.Sprintf("/%s/%s/tvshow.nfo", config.Conf.TVPath, title), data, 0644)
 	if err != nil {
@@ -103,15 +161,25 @@ func writeTVShowNfo(nfo []byte, title string) {
 func collectImages(name string, logo string, poster string, fanart string, seasonsPosters []string, seasonNumber []int) {
 	seasonsImages := make(map[string]string)
 	for i := 0; i < len(seasonsPosters); i++ {
-		seasonsImages[fmt.Sprintf("season%d-poster.jpg", seasonNumber[i])] = seasonsPosters[i]
+		seasonsImages[fmt.Sprintf("Season0%d-poster.jpg", seasonNumber[i])] = seasonsPosters[i]
 	}
-	collection := model.TVCollection{
-		ClearLogo: util.MakeImagePath(logo),
-		Poster:    util.MakeImagePath(poster),
-		Fanart:    util.MakeImagePath(fanart),
-		Seasons:   seasonsImages,
+	collection := new(model.TVCollection)
+	if logo != "" {
+		collection = &model.TVCollection{
+			ClearLogo: util.MakeImagePath(logo),
+			Poster:    util.MakeImagePath(poster),
+			Fanart:    util.MakeImagePath(fanart),
+			Seasons:   seasonsImages,
+		}
+	} else {
+		collection = &model.TVCollection{
+			Poster:  util.MakeImagePath(poster),
+			Fanart:  util.MakeImagePath(fanart),
+			Seasons: seasonsImages,
+		}
 	}
-	downloadImages(name, &collection)
+
+	downloadImages(name, collection)
 }
 
 func downloadImages(name string, c *model.TVCollection) {
@@ -177,5 +245,32 @@ func downloadImage(path string, imgUrl string) error {
 		return err
 	}
 	fmt.Printf("Total length: %d", written)
+	return nil
+}
+
+func writeTVEpisodeNfo(data []byte, tvPath string, season int, name string) error {
+	HEADER := []byte(`<?xml version="0.0" encoding="UTF-8" standalone="yes" ?>`)
+	nfoData := append(HEADER, data...)
+	err := os.WriteFile(fmt.Sprintf("%s/%s.nfo", tvPath, name), nfoData, 0644)
+	if err != nil {
+		return err
+	} else {
+		return nil
+	}
+}
+func handleTVEpisodeNfo(nfo *model.TVEpisode, newPath string, name string, season int) error {
+	tvEpisodeData, err := xml.Marshal(nfo)
+	if err != nil {
+		return err
+	}
+	err = writeTVEpisodeNfo(tvEpisodeData, newPath, season, nfo.Title)
+	if err != nil {
+		return err
+	}
+	episodeImg := fmt.Sprintf("%s/%s - S0%dE0%d%s-thumb.jpg", newPath, name, season, nfo.Episode, nfo.Title)
+	err = downloadImage(episodeImg, nfo.Thumb.Value)
+	if err != nil {
+		return err
+	}
 	return nil
 }

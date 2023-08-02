@@ -82,6 +82,7 @@ func GetTVEpisode(id int, season int, episode int) (*model.TVEpisode, error) {
 	// Plot
 	episodeInfo.Plot = result.Get("overview").String()
 	// Rating
+	episodeInfo.Ratings.Rating = make([]model.Rating, 1)
 	episodeInfo.Ratings.Rating[0].Name = "themoviedb"
 	episodeInfo.Ratings.Rating[0].Max = 10
 	episodeInfo.Ratings.Rating[0].Default = true
