@@ -16,13 +16,13 @@ func init() {
 // SyncCache 同步缓存
 func SyncCache() {
 	db := database.DB
-	rules := db.Find(&model.RuleModel{})
+	rules := db.Find(&model.Rules{})
 	rows, err := rules.Rows()
 	if err != nil {
 		return
 	}
 	for rows.Next() {
-		rule := new(model.RuleModel)
+		rule := new(model.Rules)
 		err = rows.Scan(&rule)
 		if err != nil {
 			logger.ERROR.Println(err)
@@ -46,7 +46,7 @@ func SyncCache() {
 
 func NewRule(vid, name, provider, fileExtract, season, language, episodeExtract, episodePosition, episodeOffset string) error {
 	// database
-	ruleModel := new(model.RuleModel)
+	ruleModel := new(model.Rules)
 	ruleModel.VID = vid
 	ruleModel.Provider = provider
 	ruleModel.FileExtractReg = fileExtract
@@ -89,7 +89,7 @@ func NewRule(vid, name, provider, fileExtract, season, language, episodeExtract,
 
 func ModifyRule(id uint, vid, name, provider, fileExtract, season, language, episodeExtract, episodePosition, episodeOffset string) error {
 	// database
-	ruleModel := new(model.RuleModel)
+	ruleModel := new(model.Rules)
 	ruleModel.ID = id
 	ruleModel.VID = vid
 	ruleModel.Name = name
@@ -143,7 +143,7 @@ func GetRule() []*model.Rule {
 
 func HideRule(id uint) {
 	db := database.DB
-	db.Where("id = ?", id).Delete(&model.RuleModel{})
+	db.Where("id = ?", id).Delete(&model.Rules{})
 
 	// 但愿这个协程不会有什么问题
 	go func() {

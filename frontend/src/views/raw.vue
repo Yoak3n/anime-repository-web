@@ -41,19 +41,7 @@ import type {RawItem} from "../api/raw/type";
 
 let input = ref('')
 
-// test data
-let data = ref<RawItem[]>([
-  {name:'asdas',full_path:'sadasd',path:'assaasaa'},
-  {name:'asda1',full_path:'sadasd',path:'assaasaa'},
-  {name:'asda4s',full_path:'sadasd',path:'assaasaa'},
-  {name:'asd5as',full_path:'sadasd',path:'assaasaa'},
-  {name:'asd6as',full_path:'sadasd',path:'assaasaa'},
-  {name:'as8das',full_path:'sadasd',path:'assaasaa'},
-  {name:'asd6as',full_path:'sadasd',path:'assaasaa'},
-  {name:'asd2as',full_path:'sadasd',path:'assaasaa'},
-  {name:'as7das',full_path:'sadasd',path:'assaasaa'},
-  {name:'asd9as',full_path:'sadasd',path:'assaasaa'},
-])
+let data = ref<RawItem[]>([])
 
 const onReload = () => {
   reqGetRaw().then((res)=>{

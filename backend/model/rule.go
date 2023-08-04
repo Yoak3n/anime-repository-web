@@ -19,7 +19,7 @@ type Rule struct {
 	Hidden            bool
 }
 
-type RuleModel struct {
+type Rules struct {
 	gorm.Model
 	VID               string `gorm:"column:vid"`
 	Name              string `gorm:"column:name"`

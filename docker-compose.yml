@@ -1,7 +1,7 @@
 version: "3"
 services:
   anime-repository-web:
-    image: yoaken/anime-repository-web:latest
+    image: yoaken/anime-repository-web
     container_name: anime-repository-web
     ports:
       - "8080:8080"

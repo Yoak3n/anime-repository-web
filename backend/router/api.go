@@ -22,6 +22,7 @@ func runController() {
 func apiV1() {
 	v1 := r.Group("/v1")
 
+	// ? 一个问号表示我对这接口的疑问，开发初期留下来的垃圾
 	v1.POST("/tv/:id/:language", handler.GetTvInfo)
 	apiV1Config(v1)
 	apiV1Rule(v1)
