@@ -84,6 +84,10 @@ func NewRule(vid, name, provider, fileExtract, season, language, episodeExtract,
 	ruleCache.EpisodeOffset = ruleModel.EpisodeOffset
 	ruleCache.Hidden = false
 	cache.Rules = append(cache.Rules, ruleCache)
+	err = Scan()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -115,7 +119,6 @@ func ModifyRule(id uint, vid, name, provider, fileExtract, season, language, epi
 	ruleModel.EpisodePosition = p
 	// cache
 	var rule *model.Rule
-
 	for _, r := range cache.Rules {
 		if r.ID == id {
 			rule = r
@@ -130,6 +133,10 @@ func ModifyRule(id uint, vid, name, provider, fileExtract, season, language, epi
 	rule.EpisodePosition = p
 	rule.EpisodeOffset = o
 	rule.Hidden = false
+	err = Scan()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

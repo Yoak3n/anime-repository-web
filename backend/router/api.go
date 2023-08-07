@@ -3,13 +3,50 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github/Yoak3n/anime-repository-web/backend/handler"
+	"net"
 	"net/http"
+	"os"
 )
 
 func renderIndex(c *gin.Context) {
 	r.LoadHTMLFiles("resource/index.html")
 	//r.StaticFile("favicon.ico", "resource/html/favicon.ico")
-	c.HTML(http.StatusOK, "index.html", "")
+
+	hostname, err := os.Hostname()
+	if err != nil {
+		ifaces, err := net.Interfaces()
+		if err != nil {
+			hostname = "unknown"
+		}
+		for _, iface := range ifaces {
+			if iface.Flags&net.FlagUp == 0 {
+				continue
+			}
+			if iface.Flags&net.FlagLoopback != 0 {
+				continue
+			}
+			addrs, _ := iface.Addrs()
+			for _, addr := range addrs {
+				var ip net.IP
+				switch v := addr.(type) {
+				case *net.IPNet:
+					ip = v.IP
+				case *net.IPAddr:
+					ip = v.IP
+				}
+				if ip == nil || ip.IsLoopback() {
+					continue
+				}
+				ip = ip.To4()
+				if ip == nil {
+					continue
+				} else {
+					hostname = ip.String()
+				}
+			}
+		}
+	}
+	c.HTML(http.StatusOK, "index.html", hostname)
 }
 
 func runController() {

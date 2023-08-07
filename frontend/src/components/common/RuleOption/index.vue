@@ -70,17 +70,25 @@ import { NSpace, NForm, NFormItem, NCard, NInput, NInputNumber, NSelect, NButton
 import { Search } from '@vicons/ionicons5'
 import { ruleRequestData, RuleResponse } from '../../../api/rule/type';
 import { AxiosResponse } from 'axios';
+import type{RawNameResponse} from "../../../api/raw/type";
+import {reqGetTVName} from "../../../api/raw";
 
 const defaultRule:ruleRequestData =  { vid: "", provider: "TMDB", file_extract_reg: "", episode_extract_reg: "\\d+", episode_offset: 0, episode_position: 1, season: 1, type: "tv", name: "", language: 'zh-CN' }
 
 let loading = ref(false)
 let props = defineProps(['addRule','data','modify'])
 let {data} = toRefs(props)
+
 let model = ref<ruleRequestData>(defaultRule)
 
-
 const GetTvName = () => {
-
+  reqGetTVName(model.value.vid).then((res:AxiosResponse<RawNameResponse>)=>{
+    if (res.data.code == 200){
+      model.value.name = res.data.data
+    }else {
+      window.$message.error(`Get TV name error:${res.data.message}`,{ keepAliveOnHover: true, duration: 5000 })
+    }
+  })
 }
 
 const RuleAction = () => {

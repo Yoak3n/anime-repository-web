@@ -121,6 +121,7 @@ func WorkOnMatchedCache() error {
 			}()
 
 			cache.Recognized[filePath] = true
+			logger.DEBUG.Println(fmt.Sprintf("matched cache: %s", filePath))
 		}
 	}
 	return nil
