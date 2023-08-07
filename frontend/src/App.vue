@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { Component, h, ref, onMounted, provide, nextTick } from 'vue';
-import { RouterLink, useRouter, useRoute } from 'vue-router';
+import {Component, h, nextTick, onMounted, provide, ref} from 'vue';
+import {RouterLink, useRoute, useRouter} from 'vue-router';
 import NaiveProvider from './components/common/NaiveProvider/index.vue'
-import { NConfigProvider, NLayout, NLayoutSider, NLayoutContent, NMenu, NIcon, NButton, darkTheme } from 'naive-ui';
-import type { MenuOption, GlobalTheme } from 'naive-ui'
-import { LogoRss, BrowsersSharp, Settings } from '@vicons/ionicons5'
-
+import type {GlobalTheme, MenuOption} from 'naive-ui'
+import {darkTheme, NButton, NConfigProvider, NIcon, NLayout, NLayoutContent, NLayoutSider, NMenu} from 'naive-ui';
+import {BrowsersSharp, LogoRss, Settings} from '@vicons/ionicons5'
+import {reqGetHost} from "./api/raw";
 
 const $router = useRouter()
 const $route = useRoute()
@@ -45,11 +45,12 @@ onMounted(() => {
   collapsed.value = true
   nextTick().then(() => {
     setTimeout(() => {
-      let name = $route.name?.toString() as string
-      activeKey.value = name 
+      activeKey.value = $route.name?.toString() as string
     }, 1000)
   })
-
+  reqGetHost().then((res)=>{
+    document.title = res.data.data
+  })
 })
 const onSetting = () => {
   $router.push('/setting')

@@ -3,50 +3,13 @@ package router
 import (
 	"github.com/gin-gonic/gin"
 	"github/Yoak3n/anime-repository-web/backend/handler"
-	"net"
 	"net/http"
-	"os"
 )
 
 func renderIndex(c *gin.Context) {
 	r.LoadHTMLFiles("resource/index.html")
 	//r.StaticFile("favicon.ico", "resource/html/favicon.ico")
-
-	hostname, err := os.Hostname()
-	if err != nil {
-		ifaces, err := net.Interfaces()
-		if err != nil {
-			hostname = "unknown"
-		}
-		for _, iface := range ifaces {
-			if iface.Flags&net.FlagUp == 0 {
-				continue
-			}
-			if iface.Flags&net.FlagLoopback != 0 {
-				continue
-			}
-			addrs, _ := iface.Addrs()
-			for _, addr := range addrs {
-				var ip net.IP
-				switch v := addr.(type) {
-				case *net.IPNet:
-					ip = v.IP
-				case *net.IPAddr:
-					ip = v.IP
-				}
-				if ip == nil || ip.IsLoopback() {
-					continue
-				}
-				ip = ip.To4()
-				if ip == nil {
-					continue
-				} else {
-					hostname = ip.String()
-				}
-			}
-		}
-	}
-	c.HTML(http.StatusOK, "index.html", hostname)
+	c.HTML(http.StatusOK, "index.html", "")
 }
 
 func runController() {
@@ -59,6 +22,7 @@ func runController() {
 func apiV1() {
 	v1 := r.Group("/v1")
 
+	v1.GET("/host", handler.GetHost)
 	// ? 一个问号表示我对这接口的疑问，开发初期留下来的垃圾
 	v1.POST("/tv/:id/:language", handler.GetTvInfo)
 	apiV1Config(v1)

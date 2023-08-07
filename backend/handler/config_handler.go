@@ -6,11 +6,51 @@ import (
 	"github/Yoak3n/anime-repository-web/backend/backthread"
 	"github/Yoak3n/anime-repository-web/config"
 	"github/Yoak3n/anime-repository-web/package/response"
+	"net"
 	"net/http"
+	"os"
 )
 
 func GetConfig(c *gin.Context) {
 	response.SuccessWithData(c, response.ExposeConfig(config.Conf))
+}
+
+func GetHost(c *gin.Context) {
+	hostname, err := os.Hostname()
+	if err != nil {
+		ifaces, err := net.Interfaces()
+		if err != nil {
+			hostname = "unknown"
+		}
+		for _, iface := range ifaces {
+			if iface.Flags&net.FlagUp == 0 {
+				continue
+			}
+			if iface.Flags&net.FlagLoopback != 0 {
+				continue
+			}
+			addrs, _ := iface.Addrs()
+			for _, addr := range addrs {
+				var ip net.IP
+				switch v := addr.(type) {
+				case *net.IPNet:
+					ip = v.IP
+				case *net.IPAddr:
+					ip = v.IP
+				}
+				if ip == nil || ip.IsLoopback() {
+					continue
+				}
+				ip = ip.To4()
+				if ip == nil {
+					continue
+				} else {
+					hostname = ip.String()
+				}
+			}
+		}
+	}
+	response.SuccessWithData(c, hostname)
 }
 func ChangeConfig(c *gin.Context) {
 	rawJson, err := c.GetRawData()

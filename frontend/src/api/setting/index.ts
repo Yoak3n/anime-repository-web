@@ -3,8 +3,8 @@ import { Setting, SettingResponse } from "./type";
 
 
 enum API {
-    API_RAW= '/config',
+    API_CONFIG= '/config',
 }
 
-export const reqGetSetting = () => request.get<SettingResponse>(API.API_RAW)
-export const  reqPostSetting = (data: Setting) => request.post<SettingResponse>(API.API_RAW, data)
+export const reqGetSetting = () => request.get<SettingResponse>(API.API_CONFIG)
+export const  reqPostSetting = (data: Setting) => request.post<SettingResponse>(API.API_CONFIG, data)
