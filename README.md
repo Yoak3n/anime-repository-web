@@ -15,7 +15,10 @@ preparing for last one step (still a toy)
 <summary>compile manually</summary>
 
 ```bash
-go build . && cd ./frontended && npm run build && cp ./dist/ ../resource/
+go build . 
+cd ./frontended 
+npm run build 
+cp ./dist/ ../resource/
 ```
 
 </details>

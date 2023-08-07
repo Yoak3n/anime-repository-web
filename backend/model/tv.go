@@ -54,7 +54,7 @@ func NewTVItem(fullPath string) *TVItem {
 	//tvItem.Path = strings.Join(full[:l-1], "/")
 	tvItem.Path = strings.Replace(fullPath, tvItem.Name, "", 1)
 	videoType := []string{".mp4", ".mkv", ".avi"}
-	// 重复步骤，之后在扫描时就合并
+	// 重复步骤，之后再扫描时就合并
 	for _, t := range videoType {
 		if strings.HasSuffix(tvItem.Name, t) {
 			tvItem.Suffix = t
