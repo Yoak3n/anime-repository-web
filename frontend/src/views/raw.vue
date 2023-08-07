@@ -3,7 +3,7 @@
         <div class="top-part">
             <n-input placeholder="按文件名搜索" v-model:value="input" size="large">
             <template #prefix>
-                <n-button text>
+                <n-button text >
                     <n-icon :component="Search">
                     </n-icon>
                 </n-button>
@@ -16,10 +16,18 @@
             <n-list-item v-for="item in data" :key="item.full_path">
                 {{ item.name }}
                 <template #suffix>
-                    <n-button>匹配规则</n-button>
+                    <n-button @click="matchRule">匹配规则</n-button>
                 </template>
             </n-list-item>
         </n-list>
+        <n-modal
+            v-model:show="showModal"
+            transform-origin="mouse"
+            style="max-width: 50%">
+          <RuleOption :addRule="addRuleAction"></RuleOption>
+
+
+        </n-modal>
         </div>
         
         <n-button circle @click="onReload" id="reload">
@@ -34,26 +42,19 @@
 
 <script setup lang="ts">
 import {onMounted, ref} from 'vue'
-import { NList, NListItem, NButton, NInput, NIcon } from 'naive-ui';
-import { Search, ReloadOutline } from '@vicons/ionicons5'
+import {NButton, NIcon, NInput, NList, NListItem, NModal} from 'naive-ui';
+import RuleOption from '../components/common/RuleOption/index.vue'
+import {ReloadOutline, Search} from '@vicons/ionicons5'
 import {reqGetRaw} from "../api/raw";
 import type {RawItem} from "../api/raw/type";
+import {reqAddRule} from "../api/rule";
+import {ruleRequestData} from "../api/rule/type";
+import {AxiosResponse} from "axios";
 
 let input = ref('')
+let showModal = ref(false)
 
-// test data
-let data = ref<RawItem[]>([
-  {name:'asdas',full_path:'sadasd',path:'assaasaa'},
-  {name:'asda1',full_path:'sadasd',path:'assaasaa'},
-  {name:'asda4s',full_path:'sadasd',path:'assaasaa'},
-  {name:'asd5as',full_path:'sadasd',path:'assaasaa'},
-  {name:'asd6as',full_path:'sadasd',path:'assaasaa'},
-  {name:'as8das',full_path:'sadasd',path:'assaasaa'},
-  {name:'asd6as',full_path:'sadasd',path:'assaasaa'},
-  {name:'asd2as',full_path:'sadasd',path:'assaasaa'},
-  {name:'as7das',full_path:'sadasd',path:'assaasaa'},
-  {name:'asd9as',full_path:'sadasd',path:'assaasaa'},
-])
+let data = ref<RawItem[]>([])
 
 const onReload = () => {
   reqGetRaw().then((res)=>{
@@ -65,6 +66,13 @@ const onReload = () => {
     }
   })
 }
+const matchRule =  ()=> {
+  showModal.value = true
+}
+const addRuleAction = (rule: ruleRequestData): Promise<AxiosResponse> => {
+  return reqAddRule(rule)
+}
+
 
 onMounted(()=> {
   reqGetRaw().then((res)=>{

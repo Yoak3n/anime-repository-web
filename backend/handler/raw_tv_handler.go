@@ -17,7 +17,7 @@ func GetTvInfo(c *gin.Context) {
 	idTemp = strings.Split(idTemp, "-")[0]
 	language := c.Param("language")
 	if language == "" {
-		language = "zh-CN"
+		language = "zh"
 	}
 	re := regexp.MustCompile("[0-9]+")
 	idString := re.FindAllString(idTemp, -1)
@@ -35,9 +35,14 @@ func GetTvInfo(c *gin.Context) {
 	if err != nil {
 		response.Fail(c, err.Error())
 	}
-	backthread.NewTVNfo(tvInfo)
+	err = backthread.NewTVNfo(tvInfo)
+	if err != nil {
+		logger.ERROR.Println(err.Error())
+		return
+	}
 	marshal, err := json.Marshal(&tvInfo)
 	if err != nil {
+		logger.ERROR.Println(err.Error())
 		return
 	}
 	response.SuccessWithData(c, string(marshal))

@@ -8,6 +8,7 @@ import (
 type Rule struct {
 	ID                uint   `json:"id"`
 	VID               string `json:"vid"`
+	Name              string `json:"name"`
 	Provider          string `json:"provider"`
 	FileExtractReg    string `json:"file_extract_reg"`
 	Season            int    `json:"season"`
@@ -21,6 +22,7 @@ func ExposeRule(rule *model.Rule) Rule {
 	return Rule{
 		ID:                rule.ID,
 		VID:               rule.VID,
+		Name:              rule.Name,
 		Provider:          rule.Provider,
 		Season:            rule.Season,
 		Language:          rule.Language,

@@ -22,10 +22,7 @@ func ScanList() {
 			logger.ERROR.Println(err)
 			continue
 		}
-		err = WorkOnMatchedCache()
-		if err != nil {
-			logger.ERROR.Println(err)
-		}
+
 	}
 }
 
@@ -49,6 +46,11 @@ func Scan() error {
 	for _, file := range videoFiles {
 		Dispose(file)
 	}
+	err = WorkOnMatchedCache()
+	if err != nil {
+		logger.ERROR.Println(err)
+	}
+	MatchRules()
 	return nil
 }
 
@@ -66,10 +68,8 @@ func scanLoop(path string, name string) (videoFiles []string, err error) {
 	var currentPath string
 	if name != "" {
 		currentPath = fmt.Sprintf(`%s/%s`, path, name)
-		logger.INFO.Println("下级目录", currentPath)
 	} else {
 		currentPath = path
-		logger.INFO.Println("主目录", currentPath)
 	}
 
 	subs, err = os.ReadDir(currentPath)

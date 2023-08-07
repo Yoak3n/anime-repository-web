@@ -5,7 +5,7 @@
                 <n-form-item label="VID">
                     <n-input placeholder="请输入数据库的视频id" style="width: 12rem;" v-model:value="model.vid">
                         <template #suffix>
-                            <n-button text>
+                            <n-button text @click="GetTvName">
                                 <n-icon :component="Search">
                                 </n-icon>
                             </n-button>
@@ -54,7 +54,7 @@
                     <n-button type="error" ghost size="large" style="width: 10rem;" @click="resetRule">重置</n-button>
                 </n-form-item>
                 <n-form-item :show-feedback="false" :show-label="false">
-                    <n-button type="success" ghost size="large" style="width: 10rem;" @click="RuleAciton"
+                    <n-button type="success" ghost size="large" style="width: 10rem;" @click="RuleAction"
                         :loading="loading">提交</n-button>
                 </n-form-item>
             </n-space>
@@ -70,15 +70,28 @@ import { NSpace, NForm, NFormItem, NCard, NInput, NInputNumber, NSelect, NButton
 import { Search } from '@vicons/ionicons5'
 import { ruleRequestData, RuleResponse } from '../../../api/rule/type';
 import { AxiosResponse } from 'axios';
+import type{RawNameResponse} from "../../../api/raw/type";
+import {reqGetTVName} from "../../../api/raw";
 
 const defaultRule:ruleRequestData =  { vid: "", provider: "TMDB", file_extract_reg: "", episode_extract_reg: "\\d+", episode_offset: 0, episode_position: 1, season: 1, type: "tv", name: "", language: 'zh-CN' }
 
 let loading = ref(false)
 let props = defineProps(['addRule','data','modify'])
 let {data} = toRefs(props)
+
 let model = ref<ruleRequestData>(defaultRule)
 
-const RuleAciton = () => {
+const GetTvName = () => {
+  reqGetTVName(model.value.vid).then((res:AxiosResponse<RawNameResponse>)=>{
+    if (res.data.code == 200){
+      model.value.name = res.data.data
+    }else {
+      window.$message.error(`Get TV name error:${res.data.message}`,{ keepAliveOnHover: true, duration: 5000 })
+    }
+  })
+}
+
+const RuleAction = () => {
     loading.value = true
     let value: ruleRequestData = model.value
     let promise: Promise<AxiosResponse<RuleResponse, any>> 

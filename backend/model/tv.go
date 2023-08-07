@@ -42,6 +42,7 @@ type TVItem struct {
 	FullPath string `json:"full_path"`
 	Name     string `json:"name"`
 	Path     string `json:"path"`
+	Suffix   string `json:"suffix"`
 }
 
 func NewTVItem(fullPath string) *TVItem {
@@ -52,6 +53,13 @@ func NewTVItem(fullPath string) *TVItem {
 	tvItem.Name = full[l-1]
 	//tvItem.Path = strings.Join(full[:l-1], "/")
 	tvItem.Path = strings.Replace(fullPath, tvItem.Name, "", 1)
+	videoType := []string{".mp4", ".mkv", ".avi"}
+	// 重复步骤，之后在扫描时就合并
+	for _, t := range videoType {
+		if strings.HasSuffix(tvItem.Name, t) {
+			tvItem.Suffix = t
+		}
+	}
 	return tvItem
 }
 

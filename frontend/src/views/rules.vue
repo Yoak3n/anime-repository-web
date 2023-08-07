@@ -90,35 +90,6 @@ const rowProps = (row: RuleColumn) => {
     }
 }
 
-//  test data
-rules.value = [
-    {
-        id: 11,
-        vid: "123",
-        provider: "TMDB",
-        file_extract_reg: "\\sasa",
-        season: 11,
-        language: "zh-CN",
-        episode_extract_reg: "\\d",
-        episode_position: 1,
-        episode_offset: 0,
-        name: "asaa",
-        type: "tv"
-    }, {
-        id: 1123111,
-        vid: "1245",
-        provider: "TMDB",
-        file_extract_reg: "\\sasa",
-        season: 11,
-        language: "zh-CN",
-        episode_extract_reg: "\\d",
-        episode_position: 1,
-        episode_offset: 0,
-        name: "asdasda",
-        type: "tv",
-    },
-
-]
 
 const handleSelect = (key: string | number) => {
     switch (key) {
