@@ -15,7 +15,7 @@ func init() {
 
 // SyncCache 同步缓存
 func SyncCache() {
-	db := database.DB
+	db := database.GetDB()
 	rules := db.Find(&model.Rules{})
 	rows, err := rules.Rows()
 	if err != nil {
