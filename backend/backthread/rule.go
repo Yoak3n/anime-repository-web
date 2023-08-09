@@ -2,6 +2,7 @@ package backthread
 
 import (
 	"errors"
+	"fmt"
 	"github/Yoak3n/anime-repository-web/backend/database"
 	"github/Yoak3n/anime-repository-web/backend/model"
 	"github/Yoak3n/anime-repository-web/package/logger"
@@ -117,6 +118,7 @@ func ModifyRule(id uint, vid, name, provider, fileExtract, season, language, epi
 		return errors.New("episode position must be integer")
 	}
 	ruleModel.EpisodePosition = p
+	logger.INFO.Println(fmt.Sprintf("创建了一条规则，id为%d", ruleModel.ID))
 	// cache
 	var rule *model.Rule
 	for _, r := range cache.Rules {
@@ -143,7 +145,9 @@ func ModifyRule(id uint, vid, name, provider, fileExtract, season, language, epi
 func GetRule() []*model.Rule {
 	rules := make([]*model.Rule, 0)
 	for _, rule := range cache.Rules {
-		rules = append(rules, rule)
+		if !rule.Hidden {
+			rules = append(rules, rule)
+		}
 	}
 	return rules
 }
@@ -151,13 +155,10 @@ func GetRule() []*model.Rule {
 func HideRule(id uint) {
 	db := database.GetDB()
 	db.Where("id = ?", id).Delete(&model.Rules{})
-
-	// 但愿这个协程不会有什么问题
-	go func() {
-		for _, rule := range cache.Rules {
-			if id == rule.ID {
-				rule.Hidden = true
-			}
+	logger.INFO.Println("隐藏了一条规则,id为:", id)
+	for _, rule := range cache.Rules {
+		if id == rule.ID {
+			rule.Hidden = true
 		}
-	}()
+	}
 }

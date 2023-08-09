@@ -51,7 +51,7 @@ func MatchRules() {
 	logger.DEBUG.Println("start match rules")
 	for filePath, _ := range cache.TvFiles {
 		for _, rule := range cache.Rules {
-			if rule.FileExtractReg.Match([]byte(filePath)) && !rule.Hidden && cache.Recognized[filePath] {
+			if rule.FileExtractReg.Match([]byte(filePath)) && !rule.Hidden && !cache.Recognized[filePath] {
 				logger.DEBUG.Println("匹配成功")
 				cache.MatchRules[filePath] = rule
 			}

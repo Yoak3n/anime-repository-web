@@ -7,5 +7,7 @@ services:
       - "8080:8080"
     volumes:
       - ./config.yml ./config.yml
+      - ./data/ ./data/
+      # add a path as the volume to dispose video files
     environment:
       - GIN_MODE=release
