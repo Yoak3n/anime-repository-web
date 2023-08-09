@@ -2,9 +2,9 @@ package database
 
 import (
 	"fmt"
+	"github.com/glebarez/sqlite"
 	"github/Yoak3n/anime-repository-web/package/logger"
 	"github/Yoak3n/anime-repository-web/package/util"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
