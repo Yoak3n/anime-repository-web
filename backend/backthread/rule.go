@@ -15,7 +15,7 @@ func init() {
 
 // SyncCache 同步缓存
 func SyncCache() {
-	db := database.DB
+	db := database.GetDB()
 	rules := db.Find(&model.Rules{})
 	rows, err := rules.Rows()
 	if err != nil {
@@ -68,7 +68,7 @@ func NewRule(vid, name, provider, fileExtract, season, language, episodeExtract,
 		return errors.New("episode offset must be integer")
 	}
 	ruleModel.EpisodeOffset = o
-	database.DB.Create(&ruleModel)
+	database.GetDB().Create(&ruleModel)
 
 	// cache
 	ruleCache := new(model.Rule)
@@ -149,7 +149,7 @@ func GetRule() []*model.Rule {
 }
 
 func HideRule(id uint) {
-	db := database.DB
+	db := database.GetDB()
 	db.Where("id = ?", id).Delete(&model.Rules{})
 
 	// 但愿这个协程不会有什么问题
