@@ -120,7 +120,7 @@ const onAddClicked = () => {
 
 const addRule = (rule: ruleRequestData): Promise<AxiosResponse> => {
     let promise = reqAddRule(rule)
-    setTimeout(getRule, 500)
+    setTimeout(getRule, 1000)
 
     return promise
 }

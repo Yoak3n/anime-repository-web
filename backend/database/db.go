@@ -19,10 +19,9 @@ func init() {
 		logger.ERROR.Println("table migrate error:", err)
 		return
 	}
-	conn.SetMaxOpenConns(100)
+	conn.SetMaxOpenConns(10)
 	conn.SetMaxIdleConns(10)
 	conn.SetConnMaxLifetime(time.Hour)
-
 }
 
 func GetDB() *gorm.DB {

@@ -45,8 +45,11 @@ func NewTVNfo(tv *tmdb.TVDetails) error {
 		genres = append(genres, genre.Name)
 	}
 	// genThumbs
-	thumbs := make([]model.Thumb, 0) // genClearlogo
-	thumbs = append(thumbs, model.Thumb{Aspect: "clearlogo", Value: util.MakeImagePath(tv.Networks[0].LogoPath)})
+	thumbs := make([]model.Thumb, 0)
+	if len(tv.Networks) > 0 {
+		// genClearlogo
+		thumbs = append(thumbs, model.Thumb{Aspect: "clearlogo", Value: util.MakeImagePath(tv.Networks[0].LogoPath)})
+	}
 	// genSeasonPoster
 	// for collection
 	seasonPoster := make([]string, 0)
@@ -94,7 +97,6 @@ func NewTVNfo(tv *tmdb.TVDetails) error {
 	}
 	logger.WARN.Println(string(nfoData))
 	if len(tv.Networks) > 0 {
-
 		go writeTVShowNfo(nfoData, tv.Name)
 		go collectImages(tv.Name, util.MakeImagePath(tv.Networks[0].LogoPath), util.MakeImagePath(tv.PosterPath), util.MakeImagePath(tv.BackdropPath), seasonPoster, seasonNumber)
 	} else {
@@ -178,7 +180,6 @@ func downloadImages(name string, c *model.TVCollection) {
 		}()
 	}
 	wg.Wait()
-
 }
 func downloadImage(path string, imgUrl string) error {
 	res, err := http.Get(imgUrl)
@@ -204,7 +205,7 @@ func downloadImage(path string, imgUrl string) error {
 	return nil
 }
 
-func writeTVEpisodeNfo(data []byte, tvPath string, season int, name string) error {
+func writeTVEpisodeNfo(data []byte, tvPath string, name string) error {
 	HEADER := []byte(`<?xml version="0.0" encoding="UTF-8" standalone="yes" ?>`)
 	nfoData := append(HEADER, data...)
 	err := os.WriteFile(fmt.Sprintf("%s/%s.nfo", tvPath, name), nfoData, 0644)
@@ -219,7 +220,7 @@ func handleTVEpisodeNfo(nfo *model.TVEpisode, newPath string, name string, seaso
 	if err != nil {
 		return err
 	}
-	err = writeTVEpisodeNfo(tvEpisodeData, newPath, season, nfo.Title)
+	err = writeTVEpisodeNfo(tvEpisodeData, newPath, nfo.Title)
 	if err != nil {
 		return err
 	}

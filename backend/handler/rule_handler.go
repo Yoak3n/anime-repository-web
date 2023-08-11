@@ -60,7 +60,7 @@ func GetRule(c *gin.Context) {
 	response.SuccessWithData(c, data)
 }
 func HiddenRule(c *gin.Context) {
-	id := c.Query("id")
+	id := c.Param("id")
 	did, err := strconv.Atoi(id)
 	if err != nil {
 		logger.ERROR.Println(errors.New("id is not int"))
