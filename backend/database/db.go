@@ -16,7 +16,12 @@ func init() {
 	conn, _ = db.DB()
 	err := db.AutoMigrate(&model.Rules{})
 	if err != nil {
-		logger.ERROR.Println("table migrate error:", err)
+		logger.ERROR.Println("table of rule migrate error:", err)
+		return
+	}
+	err = db.AutoMigrate(&model.VideoFiles{})
+	if err != nil {
+		logger.ERROR.Println("table of file migrate error:", err)
 		return
 	}
 	conn.SetMaxOpenConns(10)

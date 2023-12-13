@@ -9,7 +9,7 @@
                 </n-button>
             </template>
         </n-input>
-        <n-list hoverable>
+        <n-list class="rule-list" hoverable>
             <template #header>
                 文件名
             </template>
@@ -92,7 +92,7 @@ onMounted(()=> {
     height: 100%;
     justify-content: space-between;
     .top-part{
-        .n-list{
+        .rule-list{
             padding: 0 3rem 0 0;
         }
         

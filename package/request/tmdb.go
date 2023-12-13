@@ -3,14 +3,15 @@ package request
 import (
 	"errors"
 	"fmt"
-	tmdb "github.com/cyruzin/golang-tmdb"
-	"github.com/tidwall/gjson"
 	"github/Yoak3n/anime-repository-web/backend/model"
 	"github/Yoak3n/anime-repository-web/config"
 	"github/Yoak3n/anime-repository-web/package/logger"
 	"io"
 	"net/http"
 	"time"
+
+	tmdb "github.com/cyruzin/golang-tmdb"
+	"github.com/tidwall/gjson"
 )
 
 var TC *tmdb.Client
@@ -19,7 +20,7 @@ var e error
 func init() {
 	TC, e = tmdb.Init(config.Conf.ApiKey)
 	if e != nil {
-		logger.ERROR.Panic(e)
+		logger.ERROR.Println(e)
 	}
 	TC.SetClientConfig(GenRequestClient())
 	logger.INFO.Println("TMDB Client initialized")

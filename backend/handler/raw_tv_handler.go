@@ -52,6 +52,7 @@ func GetRaw(c *gin.Context) {
 	files := backthread.GetFiles()
 	response.SuccessWithData(c, files)
 }
+
 func GetRawTVName(c *gin.Context) {
 	vid := c.Param("vid")
 	language := c.Query("language")

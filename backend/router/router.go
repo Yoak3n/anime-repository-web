@@ -10,7 +10,9 @@ import (
 var r *gin.Engine
 
 func RunSever() {
+	gin.SetMode(gin.ReleaseMode)
 	r = gin.Default()
+
 	runController()
 	err := r.Run(fmt.Sprintf(":%d", config.Conf.Port))
 	if err != nil {
