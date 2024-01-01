@@ -194,6 +194,9 @@ func downloadImages(name string, c *model.TVCollection) {
 	wg.Wait()
 }
 func downloadImage(path string, imgUrl string) error {
+	if _, err := os.Stat(path); os.IsExist(err) {
+		return err
+	}
 	res, err := http.Get(imgUrl)
 	if err != nil {
 		return err

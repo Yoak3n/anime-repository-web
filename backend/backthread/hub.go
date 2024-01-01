@@ -53,6 +53,7 @@ func MatchRules() {
 				if rule.FileExtractReg.Match([]byte(filePath)) && !rule.Hidden && !cache.Recognized[filePath] {
 					logger.DEBUG.Println("匹配成功")
 					cache.MatchRules[filePath] = rule
+
 				}
 			} else {
 				logger.INFO.Println("文件已识别")
@@ -69,6 +70,7 @@ func WorkOnMatchedCache() error {
 	for filePath, rule := range cache.MatchRules {
 		// 过滤已识别文件，不过之后已识别的文件已经不在该文件夹
 		if !cache.Recognized[filePath] {
+			cache.Recognized[filePath] = true
 			allDirectory := fmt.Sprintf("%s/%s/Season %d", config.Conf.TVPath, rule.Name, rule.Season)
 			util.CreateDirNotExists(allDirectory)
 			logger.INFO.Println("Create dir:", allDirectory)
@@ -123,7 +125,6 @@ func WorkOnMatchedCache() error {
 				}
 			}()
 
-			cache.Recognized[filePath] = true
 			logger.DEBUG.Println(fmt.Sprintf("cache matched: %s", filePath))
 		}
 	}
