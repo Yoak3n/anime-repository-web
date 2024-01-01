@@ -11,7 +11,7 @@
             </template>
         </n-switch>
         <n-divider>存储</n-divider>
-        <n-form :model="configData">
+        <n-form class="n-form" :model="configData">
             <n-form-item label="待处理文件路径">
                 <n-input placeholder="" v-model:value="configData.raw_path"></n-input>
             </n-form-item>
@@ -45,7 +45,7 @@
         <n-divider>关于</n-divider>
         <about></about>
         <copyleft />
-        <n-button circle @click="saveSetting" :bordered="false">
+        <n-button class="n-button" circle @click="saveSetting" :bordered="false">
             <template #icon>
                 <n-icon size="30">
                     <SaveOutline />

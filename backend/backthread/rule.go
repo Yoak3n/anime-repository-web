@@ -3,6 +3,7 @@ package backthread
 import (
 	"errors"
 	"fmt"
+	"github/Yoak3n/anime-repository-web/backend/controller"
 	"github/Yoak3n/anime-repository-web/backend/database"
 	"github/Yoak3n/anime-repository-web/backend/model"
 	"github/Yoak3n/anime-repository-web/package/logger"
@@ -16,19 +17,12 @@ func init() {
 
 // SyncCache 同步缓存
 func SyncCache() {
-	db := database.GetDB()
-	rules := db.Find(&model.Rules{})
-	rows, err := rules.Rows()
-	if err != nil {
+	rules := controller.GetRules()
+	if rules == nil {
+		logger.INFO.Println("缓存同步失败")
 		return
 	}
-	for rows.Next() {
-		rule := new(model.Rules)
-		err = rows.Scan(&rule)
-		if err != nil {
-			logger.ERROR.Println(err)
-			return
-		}
+	for _, rule := range rules {
 		cacheRule := new(model.Rule)
 		cacheRule.ID = rule.ID
 		cacheRule.VID = rule.VID
@@ -40,7 +34,6 @@ func SyncCache() {
 		cacheRule.EpisodeExtractReg = regexp.MustCompile(rule.EpisodeExtractReg)
 		cacheRule.EpisodePosition = rule.EpisodePosition
 		cacheRule.EpisodeOffset = rule.EpisodeOffset
-		cacheRule.Hidden = false
 		cache.Rules = append(cache.Rules, cacheRule)
 	}
 }

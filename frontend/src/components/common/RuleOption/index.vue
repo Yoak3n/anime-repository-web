@@ -1,5 +1,5 @@
 <template>
-    <n-card>
+    <n-card class="n-card">
         <n-form v-model="model">
             <n-space justify="space-between">
                 <n-form-item label="VID">

@@ -9,7 +9,7 @@
             <rule-option :addRule="addRule" :data="aimData" :modify="modifyRule"></rule-option>
         </n-modal>
 
-        <n-button circle @click="onAddClicked" dashed>
+        <n-button class="n-button" circle @click="onAddClicked" dashed>
             <template #icon>
                 <n-icon size="40">
                     <add-outline></add-outline>
@@ -121,7 +121,7 @@ const onAddClicked = () => {
 const addRule = (rule: ruleRequestData): Promise<AxiosResponse> => {
     let promise = reqAddRule(rule)
     setTimeout(getRule, 1000)
-
+    showModal.value = false
     return promise
 }
 const getRule = () => {

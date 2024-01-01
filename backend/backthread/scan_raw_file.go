@@ -39,7 +39,7 @@ func Scan() error {
 	videoFiles := make([]string, 0)
 	for _, file := range files {
 		if checkVideo(file) {
-			logger.INFO.Println("找到文件", file)
+			// logger.INFO.Println("找到文件", file)
 			videoFiles = append(videoFiles, file)
 		}
 	}
@@ -77,6 +77,15 @@ func scanLoop(path string, name string) (videoFiles []string, err error) {
 		return nil, err
 	}
 	for _, sub := range subs {
+		fileInfo, err := os.Lstat(currentPath + "/" + sub.Name())
+		if err != nil {
+			logger.DEBUG.Println("无法获取文件信息")
+			continue
+		}
+		if fileInfo.Mode()&os.ModeSymlink == os.ModeSymlink {
+			logger.DEBUG.Println("文件是软链接，跳过")
+			continue
+		}
 		if sub.IsDir() {
 			var loop []string
 			loop, err = scanLoop(currentPath, sub.Name())

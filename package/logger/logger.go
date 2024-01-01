@@ -27,17 +27,3 @@ func init() {
 	WARN = log.New(log.Writer(), "[WARN] ", log.LstdFlags|log.Lmsgprefix|log.Lshortfile)
 	ERROR = log.New(io.MultiWriter(file, log.Writer()), "[ERROR] ", log.LstdFlags|log.Lmsgprefix|log.Lshortfile)
 }
-
-// logger内部定义无法正常使用Lshortfile
-//func Info(v ...interface{}) {
-//	INFO.Println(v...)
-//}
-//func Debug(v ...interface{}) {
-//	DEBUG.Println(v...)
-//}
-//func Warn(v ...interface{}) {
-//	WARN.Println(v...)
-//}
-//func Error(v ...interface{}) {
-//	ERROR.Println(v...)
-//}

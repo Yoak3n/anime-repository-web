@@ -81,7 +81,7 @@ func NewTVNfo(tv *tmdb.TVDetails) error {
 		Genre:  genres,
 		Thumb:  thumbs,
 		Fanart: []model.Thumb{
-			model.Thumb{
+			{
 				Value: util.MakeImagePath(tv.BackdropPath),
 			},
 		},
@@ -95,13 +95,18 @@ func NewTVNfo(tv *tmdb.TVDetails) error {
 	if err != nil {
 		logger.ERROR.Println(err)
 	}
-	logger.WARN.Println(string(nfoData))
+
+	logoPath := tv.Networks[0].LogoPath
+	posterPath := tv.PosterPath
+	backdropPath := tv.BackdropPath
+
 	if len(tv.Networks) > 0 {
 		go writeTVShowNfo(nfoData, tv.Name)
-		go collectImages(tv.Name, util.MakeImagePath(tv.Networks[0].LogoPath), util.MakeImagePath(tv.PosterPath), util.MakeImagePath(tv.BackdropPath), seasonPoster, seasonNumber)
+		go collectImages(tv.Name, util.MakeImagePath(logoPath), util.MakeImagePath(posterPath), util.MakeImagePath(backdropPath), seasonPoster, seasonNumber)
 	} else {
-		go writeTVShowNfo(nfoData, tv.Name)
-		go collectImages(tv.Name, "", tv.PosterPath, tv.BackdropPath, seasonPoster, seasonNumber)
+		name := tv.Name
+		go writeTVShowNfo(nfoData, name)
+		go collectImages(name, "", posterPath, backdropPath, seasonPoster, seasonNumber)
 	}
 
 	return nil
@@ -110,7 +115,7 @@ func NewTVNfo(tv *tmdb.TVDetails) error {
 func writeTVShowNfo(nfo []byte, title string) {
 	HEADER := []byte(`<?xml version="0.0" encoding="UTF-8" standalone="yes" ?>`)
 	data := append(HEADER, nfo...)
-	err := os.WriteFile(fmt.Sprintf("/%s/%s/tvshow.nfo", config.Conf.TVPath, title), data, 0644)
+	err := os.WriteFile(fmt.Sprintf("%s/%s/tvshow.nfo", config.Conf.TVPath, title), data, os.ModePerm)
 	if err != nil {
 		log.Println(err)
 	}
@@ -119,7 +124,7 @@ func writeTVShowNfo(nfo []byte, title string) {
 func collectImages(name string, logo string, poster string, fanart string, seasonsPosters []string, seasonNumber []int) {
 	seasonsImages := make(map[string]string)
 	for i := 0; i < len(seasonsPosters); i++ {
-		seasonsImages[fmt.Sprintf("Season0%d-poster.jpg", seasonNumber[i])] = seasonsPosters[i]
+		seasonsImages[fmt.Sprintf("Season%d-poster.jpg", seasonNumber[i])] = seasonsPosters[i]
 	}
 	collection := new(model.TVCollection)
 	if logo != "" {
@@ -146,16 +151,22 @@ func downloadImages(name string, c *model.TVCollection) {
 	wg.Add(3 + len(c.Seasons))
 
 	tvDir := fmt.Sprintf("%s/%s/", config.Conf.TVPath, name)
+	clearLogo := c.ClearLogo
+	poster := c.Poster
+	fanart := c.Fanart
+
 	go func() {
 		defer wg.Done()
-		err := downloadImage(tvDir+"clearlogo.jpg", c.ClearLogo)
+		err := downloadImage(tvDir+"clearlogo.png", clearLogo)
+		logger.INFO.Println("downloading clearlogo")
 		if err != nil {
 			log.Println(name, "clearlogo download error:", err)
 		}
 	}()
 	go func() {
 		defer wg.Done()
-		err := downloadImage(tvDir+"poster.jpg", c.Poster)
+		err := downloadImage(tvDir+"poster.jpg", poster)
+		logger.INFO.Println("downloading poster")
 		if err != nil {
 			log.Println(name, "poster download error:", err)
 		}
@@ -163,7 +174,8 @@ func downloadImages(name string, c *model.TVCollection) {
 
 	go func() {
 		defer wg.Done()
-		err := downloadImage(tvDir+"fanart.jpg", c.Fanart)
+		err := downloadImage(tvDir+"fanart.jpg", fanart)
+		logger.INFO.Println("downloading fanart")
 		if err != nil {
 			logger.INFO.Println(name, "fanart download error:", err)
 		}
@@ -201,14 +213,14 @@ func downloadImage(path string, imgUrl string) error {
 		log.Println("write file error：", err)
 		return err
 	}
-	fmt.Printf("Total length: %d", written)
+	fmt.Printf("Total length: %d\n", written)
 	return nil
 }
 
 func writeTVEpisodeNfo(data []byte, tvPath string, name string) error {
 	HEADER := []byte(`<?xml version="0.0" encoding="UTF-8" standalone="yes" ?>`)
 	nfoData := append(HEADER, data...)
-	err := os.WriteFile(fmt.Sprintf("%s/%s.nfo", tvPath, name), nfoData, 0644)
+	err := os.WriteFile(fmt.Sprintf("%s/%s.nfo", tvPath, name), nfoData, os.ModePerm)
 	if err != nil {
 		return err
 	} else {
@@ -220,12 +232,14 @@ func handleTVEpisodeNfo(nfo *model.TVEpisode, newPath string, name string, seaso
 	if err != nil {
 		return err
 	}
+
 	err = writeTVEpisodeNfo(tvEpisodeData, newPath, nfo.Title)
 	if err != nil {
 		return err
 	}
-	episodeImg := fmt.Sprintf("%s/%s - S0%dE0%d%s-thumb.jpg", newPath, name, season, nfo.Episode, nfo.Title)
-	err = downloadImage(episodeImg, nfo.Thumb.Value)
+	episodeImg := fmt.Sprintf("%s/%s - S%dE%d%s-thumb.jpg", newPath, name, nfo.Season, nfo.Episode, nfo.Title)
+	thumbUrl := util.MakeImagePath(nfo.Thumb.Value)
+	err = downloadImage(episodeImg, thumbUrl)
 	if err != nil {
 		return err
 	}

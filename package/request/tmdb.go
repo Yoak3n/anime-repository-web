@@ -63,9 +63,9 @@ func NewToken() (string, error) {
 	return jsonResult.Get("request_token").String(), nil
 }
 
-func GetTVEpisode(id int, season int, episode int) (*model.TVEpisode, error) {
+func GetTVEpisode(id int, season int, episode int, language string) (*model.TVEpisode, error) {
 	imagePrefix := "https://image.tmdb.org/t/p/original"
-	uri := fmt.Sprintf("https://api.themoviedb.org/3/tv/%d/season/%d/episode/%d?api_key=%s&append_to_response=credits,images", id, season, episode, config.Conf.ApiKey)
+	uri := fmt.Sprintf("https://api.themoviedb.org/3/tv/%d/season/%d/episode/%d?api_key=%s&append_to_response=credits,images&language=%s", id, season, episode, config.Conf.ApiKey, language)
 
 	client := GenRequestClient()
 	res, err := client.Get(uri)
@@ -76,6 +76,9 @@ func GetTVEpisode(id int, season int, episode int) (*model.TVEpisode, error) {
 	buf, err := io.ReadAll(res.Body)
 	result := gjson.ParseBytes(buf)
 	episodeInfo := new(model.TVEpisode)
+
+	// Title
+	episodeInfo.Title = result.Get("name").String()
 	// Episode
 	episodeInfo.Episode = result.Get("episode_number").Int()
 	// Season

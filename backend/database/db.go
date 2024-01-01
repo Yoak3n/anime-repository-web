@@ -19,11 +19,6 @@ func init() {
 		logger.ERROR.Println("table of rule migrate error:", err)
 		return
 	}
-	err = db.AutoMigrate(&model.VideoFiles{})
-	if err != nil {
-		logger.ERROR.Println("table of file migrate error:", err)
-		return
-	}
 	conn.SetMaxOpenConns(10)
 	conn.SetMaxIdleConns(10)
 	conn.SetConnMaxLifetime(time.Hour)
