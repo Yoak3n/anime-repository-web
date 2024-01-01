@@ -10,7 +10,7 @@ RUN go build -o main
 
 FROM scratch as runtime
 WORKDIR /app/anime-repository-web
-COPY --from=builder  /app/anime-repository-web/frontend/dist/ ./resource/
+COPY --from=builder  /app/anime-repository-web/resource ./resource
 COPY --from=builder /app/anime-repository-web/config.example.yml  config.yml
 COPY --from=builder /app/anime-repository-web/main  main
 EXPOSE 8080
