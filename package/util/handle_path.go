@@ -41,12 +41,13 @@ func MoveVideoFile(filePath string, newFilePath string) error {
 		fmt.Println("打开源文件失败:", err)
 		return err
 	}
-	defer srcFile.Close()
 
 	_, err = io.Copy(new_file, srcFile)
 	if err != nil {
+		srcFile.Close()
 		return err
 	}
+	srcFile.Close()
 	err = os.Remove(filePath)
 	if err != nil {
 		return err
