@@ -15,7 +15,7 @@ func MakeImagePath(imagePath string) string {
 
 func CreateDirNotExists(dir string) {
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		e := os.MkdirAll(dir, 0777)
+		e := os.MkdirAll(dir, os.ModePerm)
 		if e != nil {
 			println("Error creating directory: " + e.Error())
 			return

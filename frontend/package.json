@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build-test": "vue-tsc && vite build",
-    "build": "vue-tsc && vite build && mv ./dist ../resource",
+    "build": "vue-tsc && vite build && mv -f ./dist ../resource/",
     "preview": "vite preview"
   },
   "dependencies": {

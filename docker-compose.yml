@@ -6,8 +6,12 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - ./config.yml ./config.yml
-      - ./data/ ./data/
-      # add a path as the volume to dispose video files
+      - ./config.yml:/app/anime-repository-web/config.yml:rw
+      - ./data/:/app/anime-repository-web/data/:rw
+      - ./Downloads/:/app/anime-repository-web/downloads/:rw
+      - ./collections/:/app/anime-repository-web/collections/:rw
+      # add paths as the volumes to dispose video files
     environment:
       - GIN_MODE=release
+    network_mode: "host"
+
