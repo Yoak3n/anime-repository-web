@@ -16,8 +16,8 @@ preparing for last one step (still a toy)
 
 ```bash
 go build . 
-cd ./frontended 
-npm run build 
+cd ./frontend 
+npm run build-test  # use build instead on Linux  
 cp ./dist/ ../resource/
 ```
 

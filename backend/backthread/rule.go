@@ -2,7 +2,6 @@ package backthread
 
 import (
 	"errors"
-	"fmt"
 	"github/Yoak3n/anime-repository-web/backend/controller"
 	"github/Yoak3n/anime-repository-web/backend/database"
 	"github/Yoak3n/anime-repository-web/backend/model"
@@ -111,7 +110,7 @@ func ModifyRule(id uint, vid, name, provider, fileExtract, season, language, epi
 		return errors.New("episode position must be integer")
 	}
 	ruleModel.EpisodePosition = p
-	logger.INFO.Println(fmt.Sprintf("创建了一条规则，id为%d", ruleModel.ID))
+	logger.INFO.Printf("创建了一条规则，id为%d\n", ruleModel.ID)
 	// cache
 	var rule *model.Rule
 	for _, r := range cache.Rules {

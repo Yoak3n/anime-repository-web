@@ -13,5 +13,4 @@ services:
       # add paths as the volumes to dispose video files
     environment:
       - GIN_MODE=release
-    network_mode: "host"
 

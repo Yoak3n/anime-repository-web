@@ -46,10 +46,15 @@ onMounted(() => {
   nextTick().then(() => {
     setTimeout(() => {
       activeKey.value = $route.name?.toString() as string
-    }, 1000)
+    }, 500)
   })
   reqGetHost().then((res)=>{
-    document.title = res.data.data
+    if (res.data.data != undefined){
+      document.title = res.data.data
+    }else{
+      document.title = "anime-repository-web"
+    }
+    
   })
 })
 const onSetting = () => {

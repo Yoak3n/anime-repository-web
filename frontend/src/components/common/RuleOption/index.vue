@@ -1,5 +1,6 @@
 <template>
     <n-card class="n-card">
+
         <n-form v-model="model">
             <n-space justify="space-between">
                 <n-form-item label="VID">
@@ -19,7 +20,7 @@
                     <n-select v-model:value="model.provider" :options="providerOptions" style="width: 12rem;"></n-select>
                 </n-form-item>
             </n-space>
-            <n-space justify="space-between" >
+            <n-space justify="space-between">
                 <n-form-item label="从文件名提取标题" style="width: 20rem;">
                     <n-input v-model:value="model.file_extract_reg" placeholder="请输入待处理文件名中可供本规则检索的部分"></n-input>
                 </n-form-item>
@@ -48,7 +49,9 @@
                     <n-input-number v-model:value="model.episode_offset" style="width: 12rem;"></n-input-number>
                 </n-form-item>
             </n-space>
-
+            <n-form-item >
+                <n-select :options="rulesOptions" placeholder="或选择已有的规则"></n-select>
+            </n-form-item>
             <n-space justify="space-evenly">
                 <n-form-item :show-feedback="false" :show-label="false">
                     <n-button type="error" ghost size="large" style="width: 10rem;" @click="resetRule">重置</n-button>
@@ -61,6 +64,7 @@
 
 
         </n-form>
+
     </n-card>
 </template>
 
@@ -70,37 +74,37 @@ import { NSpace, NForm, NFormItem, NCard, NInput, NInputNumber, NSelect, NButton
 import { Search } from '@vicons/ionicons5'
 import { ruleRequestData, RuleResponse } from '../../../api/rule/type';
 import { AxiosResponse } from 'axios';
-import type{RawNameResponse} from "../../../api/raw/type";
-import {reqGetTVName} from "../../../api/raw";
+import type { RawNameResponse } from "../../../api/raw/type";
+import { reqGetTVName } from "../../../api/raw";
 
-const defaultRule:ruleRequestData =  { vid: "", provider: "TMDB", file_extract_reg: "", episode_extract_reg: "\\d+", episode_offset: 0, episode_position: 1, season: 1, type: "tv", name: "", language: 'zh-CN' }
+const defaultRule: ruleRequestData = { vid: "", provider: "TMDB", file_extract_reg: "", episode_extract_reg: "\\d+", episode_offset: 0, episode_position: 1, season: 1, type: "tv", name: "", language: 'zh-CN' }
 
 let loading = ref(false)
-let props = defineProps(['addRule','data','modify'])
-let {data} = toRefs(props)
+let props = defineProps(['addRule', 'data', 'modify'])
+let { data } = toRefs(props)
 
 let model = ref<ruleRequestData>(defaultRule)
 
 const GetTvName = () => {
-  reqGetTVName(model.value.vid).then((res:AxiosResponse<RawNameResponse>)=>{
-    if (res.data.code == 200){
-      model.value.name = res.data.data
-    }else {
-      window.$message.error(`Get TV name error:${res.data.message}`,{ keepAliveOnHover: true, duration: 5000 })
-    }
-  })
+    reqGetTVName(model.value.vid).then((res: AxiosResponse<RawNameResponse>) => {
+        if (res.data.code == 200) {
+            model.value.name = res.data.data
+        } else {
+            window.$message.error(`Get TV name error:${res.data.message}`, { keepAliveOnHover: true, duration: 5000 })
+        }
+    })
 }
 
 const RuleAction = () => {
     loading.value = true
     let value: ruleRequestData = model.value
-    let promise: Promise<AxiosResponse<RuleResponse, any>> 
-    if (data?.value != undefined || data?.value != null ){
+    let promise: Promise<AxiosResponse<RuleResponse, any>>
+    if (data?.value != undefined || data?.value != null) {
         promise = props.modify(value)
-    }else{
+    } else {
         promise = props.addRule(value)
     }
-    
+
     promise.then((res) => {
         if (res.data.code == 200 && res.data.data != null) {
             loading.value = false
@@ -110,17 +114,17 @@ const RuleAction = () => {
     })
 }
 
-const resetRule = ()=>{
+const resetRule = () => {
     model.value = defaultRule
 }
 
-onMounted(()=>{
-    if (data?.value != undefined || data?.value != null ){
+onMounted(() => {
+    if (data?.value != undefined || data?.value != null) {
         model.value = data.value
     }
 })
-onUpdated(()=>{
-    if (data?.value != undefined || data?.value != null ){
+onUpdated(() => {
+    if (data?.value != undefined || data?.value != null) {
         model.value = data.value
     }
 })
@@ -128,9 +132,12 @@ onUpdated(()=>{
 
 
 // select options
-let typeOptions = [{label:"tv",value:'tv'},{label:'movie',value:'movie'},{label:'anime',key:'tv'}]
+let typeOptions = [{ label: "tv", value: 'tv' }, { label: 'movie', value: 'movie' }, { label: 'anime', key: 'tv' }]
 let providerOptions = [{ label: "TMDB", value: "TMDB" }]
 let languageOptions = [{ label: "中文", value: "zh-CN" }]
+let rulesOptions = ref([{ label: "111asdasd1", value: "1111" },{ label: "中文", value: "zh-CN" }])
+
+
 </script>
 
 <style scoped lang="less">
