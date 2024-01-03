@@ -6,9 +6,9 @@
 
 ---
 developing...  
-preparing for last one step (still a toy)
+Due to file operations involved, you will need to resolve the related permission issues on your own during runtime.
 
-### Installation
+### Installation & Usage
 
 
 <details>
