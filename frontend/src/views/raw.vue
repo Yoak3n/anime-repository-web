@@ -9,17 +9,14 @@
                 </n-button>
             </template>
         </n-input>
-        <n-list class="rule-list" hoverable>
-            <template #header>
-                文件名
-            </template>
-            <n-list-item v-for="item in data" :key="item.full_path">
-                {{ item.name }}
-                <template #suffix>
-                    <n-button @click="matchRule">匹配规则</n-button>
-                </template>
-            </n-list-item>
-        </n-list>
+        <n-data-table
+        :data="rawTableData"
+        :columns="columns"
+        :pagination="{pageSize: 15}" 
+        striped
+        >
+
+        </n-data-table>
         <n-modal
             v-model:show="showModal"
             transform-origin="mouse"
@@ -41,12 +38,12 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref} from 'vue'
-import {NButton, NIcon, NInput, NList, NListItem, NModal} from 'naive-ui';
+import {onMounted, ref,reactive,h} from 'vue'
+import {NButton, NIcon, NInput, NDataTable, NModal,DataTableColumns} from 'naive-ui';
 import RuleOption from '../components/common/RuleOption/index.vue'
 import {ReloadOutline, Search} from '@vicons/ionicons5'
 import {reqGetRaw} from "../api/raw";
-import type {RawItem} from "../api/raw/type";
+import type {RawItem,RawTabelData} from "../api/raw/type";
 import {reqAddRule} from "../api/rule";
 import {ruleRequestData} from "../api/rule/type";
 import {AxiosResponse} from "axios";
@@ -56,6 +53,53 @@ let showModal = ref(false)
 
 let data = ref<RawItem[]>([])
 
+type RowData = {
+  key:string,
+  name:string
+}
+const matchRule =  (row:RowData)=> {
+  console.log(row)
+  showModal.value = true
+}
+
+
+
+let rawTableData = reactive<RawTabelData[]>([])
+const createColumns = ({
+  matchRule
+}:{matchRule:(row:RowData)=>void
+}):DataTableColumns<RowData> =>{
+  return [
+    {
+      title: '文件名',
+      key: 'name',
+      defaultSortOrder: 'ascend',
+      sorter: 'default'
+    },
+    {
+      title: '动作',
+      key: 'actions',
+      render (row) {
+        return h(
+          NButton,
+          {
+            strong: true,
+            tertiary: true,
+            size: 'small',
+            onClick: () => matchRule(row)
+          },
+          { default: () => '匹配规则' }
+        )
+      },
+      width:'100'
+    }
+  ]
+}
+
+const columns = createColumns({matchRule})
+
+
+
 const onReload = () => {
   reqGetRaw().then((res)=>{
     if(res.data.code!=200){
@@ -63,12 +107,14 @@ const onReload = () => {
     }else{
       window.$message.success('Get raw files successfully',{ keepAliveOnHover: true, duration: 5000 })
       data.value = res.data.data
+      data.value.forEach((v,i)=>{
+        rawTableData[i].key = v.full_path
+        rawTableData[i].name = v.name
+      })
     }
   })
 }
-const matchRule =  ()=> {
-  showModal.value = true
-}
+
 const addRuleAction = (rule: ruleRequestData): Promise<AxiosResponse> => {
   return reqAddRule(rule)
 }
@@ -78,6 +124,10 @@ onMounted(()=> {
   reqGetRaw().then((res)=>{
     if (res.status==200 &&res.data.code==200){
       data.value = res.data.data
+      data.value.forEach((v,i)=>{
+        rawTableData[i].key = v.full_path
+        rawTableData[i].name = v.name
+      })
     }
   })
 })
@@ -92,7 +142,7 @@ onMounted(()=> {
     height: 100%;
     justify-content: space-between;
     .top-part{
-        .rule-list{
+        .raw-list{
             padding: 0 3rem 0 0;
         }
         

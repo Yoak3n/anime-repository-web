@@ -22,6 +22,10 @@ type Cache struct {
 // create a cache for disposal
 var cache *Cache
 
+func GetCache() *Cache {
+	return cache
+}
+
 func init() {
 	cache = &Cache{
 		TvFiles:    make(map[string]*model.TVItem),
