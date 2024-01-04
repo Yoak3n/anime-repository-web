@@ -72,5 +72,12 @@ func ChangeConfig(c *gin.Context) {
 			_ = backthread.Scan()
 			response.Success(c)
 		}
+		// 清空缓存中已有扫描到的文件
+		go func() {
+			for k := range backthread.GetCache().TvFiles {
+				delete(backthread.GetCache().TvFiles, k)
+			}
+		}()
+
 	}
 }

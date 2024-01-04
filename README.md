@@ -6,9 +6,9 @@
 
 ---
 developing...  
-preparing for last one step (still a toy)
+**Due to file operations involved, you will need to resolve the related permission issues on your own during runtime.**
 
-### Installation
+### Installation & Usage
 
 
 <details>
@@ -17,8 +17,7 @@ preparing for last one step (still a toy)
 ```bash
 go build . 
 cd ./frontend 
-npm run build-test  # use build instead on Linux  
-cp ./dist/ ../resource/
+npm run build  
 ```
 
 </details>

@@ -13,3 +13,9 @@ export interface RawItem {
     name: string;
     path: string;
 }
+
+
+export interface RawTabelData {
+    name:string,
+    key: string
+}
