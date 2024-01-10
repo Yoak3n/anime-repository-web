@@ -5,7 +5,6 @@ import (
 	"encoding/xml"
 	"errors"
 	"fmt"
-	tmdb "github.com/cyruzin/golang-tmdb"
 	"github/Yoak3n/anime-repository-web/backend/model"
 	"github/Yoak3n/anime-repository-web/config"
 	"github/Yoak3n/anime-repository-web/package/logger"
@@ -16,6 +15,8 @@ import (
 	"os"
 	"strconv"
 	"sync"
+
+	tmdb "github.com/cyruzin/golang-tmdb"
 )
 
 const (
@@ -90,6 +91,7 @@ func NewTVNfo(tv *tmdb.TVDetails) error {
 			Type:    "tmdb",
 			Default: true,
 		},
+		Actor: actors,
 	}
 	nfoData, err := xml.Marshal(&tvNfo)
 	if err != nil {
@@ -146,7 +148,7 @@ func collectImages(name string, logo string, poster string, fanart string, seaso
 }
 
 func downloadImages(name string, c *model.TVCollection) {
-	// 同步or异步？——是否会被风控
+	// 同步or异步？---是否会被风控
 	wg := &sync.WaitGroup{}
 	wg.Add(3 + len(c.Seasons))
 

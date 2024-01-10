@@ -94,17 +94,21 @@ func WorkOnMatchedCache() error {
 					logger.ERROR.Println(err)
 				}
 				// 发送请求
-				for {
+				for i := 0; i < 5; i++ {
 					tvInfo, e := tc.GetTVDetails(id, options)
 					if e != nil {
 						logger.ERROR.Println(e)
 					}
 					e = NewTVNfo(tvInfo)
 					if e != nil {
+						if i >= 5 {
+							logger.ERROR.Println("刮削图片失败次数过多，请检查网络设置！")
+						}
 						continue
 					} else {
 						break
 					}
+
 				}
 
 				fileName := cache.TvFiles[filePath].Name
