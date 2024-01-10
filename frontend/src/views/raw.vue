@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import {onMounted, ref,reactive,h} from 'vue'
+import {onMounted, ref,reactive,h, nextTick} from 'vue'
 import {NButton, NIcon, NInput, NDataTable, NModal,DataTableColumns} from 'naive-ui';
 import RuleOption from '../components/common/RuleOption/index.vue'
 import {ReloadOutline, Search} from '@vicons/ionicons5'
@@ -51,7 +51,9 @@ import {AxiosResponse} from "axios";
 let input = ref('')
 let showModal = ref(false)
 
-let data = ref<RawItem[]>([])
+let rawTableData = reactive<Array<RawTabelData>>([])
+
+let data = reactive<RawItem[]>([{path:"1111",name:"adasda",full_path:"1111111111"}])
 
 type RowData = {
   key:string,
@@ -64,7 +66,6 @@ const matchRule =  (row:RowData)=> {
 
 
 
-let rawTableData = reactive<RawTabelData[]>([])
 const createColumns = ({
   matchRule
 }:{matchRule:(row:RowData)=>void
@@ -77,8 +78,8 @@ const createColumns = ({
       sorter: 'default'
     },
     {
-      title: '动作',
-      key: 'actions',
+      title: '操作',
+      key: 'action',
       render (row) {
         return h(
           NButton,
@@ -106,10 +107,11 @@ const onReload = () => {
       window.$message.error('Get raw files error'+res.data.message,{ keepAliveOnHover: true, duration: 5000 })
     }else{
       window.$message.success('Get raw files successfully',{ keepAliveOnHover: true, duration: 5000 })
-      data.value = res.data.data
-      data.value.forEach((v,i)=>{
-        rawTableData[i].key = v.full_path
-        rawTableData[i].name = v.name
+      data = res.data.data
+      data.forEach((v)=>{
+        // 数组越界
+        let rawSingleData :RowData = {key:v.full_path,name:v.name}
+        rawTableData.push(rawSingleData)
       })
     }
   })
@@ -121,12 +123,20 @@ const addRuleAction = (rule: ruleRequestData): Promise<AxiosResponse> => {
 
 
 onMounted(()=> {
+  if (data != null){
+    nextTick(()=>{
+      data.forEach((v)=>{
+        let rawSingleData :RowData = {key:v.full_path,name:v.name}
+        rawTableData.push(rawSingleData)
+    })
+    })
+  }
   reqGetRaw().then((res)=>{
     if (res.status==200 &&res.data.code==200){
-      data.value = res.data.data
-      data.value.forEach((v,i)=>{
-        rawTableData[i].key = v.full_path
-        rawTableData[i].name = v.name
+      data = res.data.data
+      data.forEach((v)=>{
+        let rawSingleData :RowData = {key:v.full_path,name:v.name}
+        rawTableData.push(rawSingleData)
       })
     }
   })
