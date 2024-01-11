@@ -1,9 +1,9 @@
 <template>
     <div class="raw-wrapper">
         <div class="top-part">
-            <n-input placeholder="按文件名搜索" v-model:value="input" size="large">
+            <n-input placeholder="按文件名搜索" v-model:value="filterName" size="large" @update:value="filterList">
             <template #prefix>
-                <n-button text >
+                <n-button text  @click="filterList">
                     <n-icon :component="Search">
                     </n-icon>
                 </n-button>
@@ -14,6 +14,7 @@
         :columns="columns"
         :pagination="{pageSize: 15}" 
         striped
+        @update="handleUpdateFilter"
         >
 
         </n-data-table>
@@ -39,7 +40,8 @@
 
 <script setup lang="ts">
 import {onMounted, ref,reactive,h, nextTick} from 'vue'
-import {NButton, NIcon, NInput, NDataTable, NModal,DataTableColumns} from 'naive-ui';
+import {NButton, NIcon, NInput, NDataTable, NModal,} from 'naive-ui';
+import type { DataTableColumns, DataTableBaseColumn, DataTableFilterState} from 'naive-ui'
 import RuleOption from '../components/common/RuleOption/index.vue'
 import {ReloadOutline, Search} from '@vicons/ionicons5'
 import {reqGetRaw} from "../api/raw";
@@ -48,12 +50,12 @@ import {reqAddRule} from "../api/rule";
 import {ruleRequestData} from "../api/rule/type";
 import {AxiosResponse} from "axios";
 
-let input = ref('')
+let filterName = ref('')
 let showModal = ref(false)
 
 let rawTableData = reactive<Array<RawTabelData>>([])
 
-let data = reactive<RawItem[]>([{path:"1111",name:"adasda",full_path:"1111111111"}])
+let data = reactive<RawItem[]>([])
 
 type RowData = {
   key:string,
@@ -64,6 +66,37 @@ const matchRule =  (row:RowData)=> {
   showModal.value = true
 }
 
+const filterList = ()=>{
+  fileNameColumn.filterOptionValue =  filterName.value
+}
+const handleUpdateFilter = (
+        filters: DataTableFilterState,
+        sourceColumn: DataTableBaseColumn
+)=> {
+        fileNameColumn.filterOptionValue = filters[sourceColumn.key] as string
+      }
+
+
+const fileNameColumn = reactive<DataTableBaseColumn<RowData>>({
+  key:"name",
+  title:"文件名",
+  defaultSortOrder: 'ascend',
+  sorter: 'default',
+  // filterOptions: [
+  //   {
+  //     label: 'London',
+  //     value: 'London'
+  //   },
+  //   {
+  //     label: 'New York',
+  //     value: 'New York'
+  //   }
+  // ],
+  filter (value, row) {
+      return !!~row.name.indexOf(value.toString())
+    }
+})
+
 
 
 const createColumns = ({
@@ -71,12 +104,7 @@ const createColumns = ({
 }:{matchRule:(row:RowData)=>void
 }):DataTableColumns<RowData> =>{
   return [
-    {
-      title: '文件名',
-      key: 'name',
-      defaultSortOrder: 'ascend',
-      sorter: 'default'
-    },
+    fileNameColumn,
     {
       title: '操作',
       key: 'action',
@@ -85,8 +113,9 @@ const createColumns = ({
           NButton,
           {
             strong: true,
-            tertiary: true,
+            // tertiary: true,
             size: 'small',
+            type:'info',
             onClick: () => matchRule(row)
           },
           { default: () => '匹配规则' }
@@ -102,14 +131,14 @@ const columns = createColumns({matchRule})
 
 
 const onReload = () => {
+  rawTableData = []
   reqGetRaw().then((res)=>{
     if(res.data.code!=200){
-      window.$message.error('Get raw files error'+res.data.message,{ keepAliveOnHover: true, duration: 5000 })
+      window.$message.error('Get raw files error: '+res.data.message,{ keepAliveOnHover: true, duration: 5000 })
     }else{
       window.$message.success('Get raw files successfully',{ keepAliveOnHover: true, duration: 5000 })
       data = res.data.data
       data.forEach((v)=>{
-        // 数组越界
         let rawSingleData :RowData = {key:v.full_path,name:v.name}
         rawTableData.push(rawSingleData)
       })
@@ -123,6 +152,7 @@ const addRuleAction = (rule: ruleRequestData): Promise<AxiosResponse> => {
 
 
 onMounted(()=> {
+  // rawTableData = []
   if (data != null){
     nextTick(()=>{
       data.forEach((v)=>{
