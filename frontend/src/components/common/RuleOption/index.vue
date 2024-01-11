@@ -76,6 +76,7 @@ import { ruleRequestData, RuleResponse } from '../../../api/rule/type';
 import { AxiosResponse } from 'axios';
 import type { RawNameResponse } from "../../../api/raw/type";
 import { reqGetTVName } from "../../../api/raw";
+import { reqGetRule } from '../../../api/rule';
 
 const defaultRule: ruleRequestData = { vid: "", provider: "TMDB", file_extract_reg: "", episode_extract_reg: "\\d+", episode_offset: 0, episode_position: 1, season: 1, type: "tv", name: "", language: 'zh-CN' }
 
@@ -118,11 +119,6 @@ const resetRule = () => {
     model.value = defaultRule
 }
 
-onMounted(() => {
-    if (data?.value != undefined || data?.value != null) {
-        model.value = data.value
-    }
-})
 onUpdated(() => {
     if (data?.value != undefined || data?.value != null) {
         model.value = data.value
@@ -130,13 +126,31 @@ onUpdated(() => {
 })
 
 
-
 // select options
 let typeOptions = [{ label: "tv", value: 'tv' }, { label: 'movie', value: 'movie' }, { label: 'anime', key: 'tv' }]
 let providerOptions = [{ label: "TMDB", value: "TMDB" }]
 let languageOptions = [{ label: "中文", value: "zh-CN" }]
-let rulesOptions = ref([{ label: "111asdasd1", value: "1111" },{ label: "中文", value: "zh-CN" }])
+let rulesOptions = ref([{ label: "中文", value: "zh-CN" }])
 
+const getRulesData=()=> {
+    rulesOptions.value = []
+    let promise = reqGetRule()
+    promise.then((res)=>{
+        if (res.status == 200 && res.data.code ==200){
+            res.data.data.forEach((v)=> {
+                let singleRuleOption  = {label:v.name,value:v.id.toString()} 
+                rulesOptions.value.push(singleRuleOption)
+            })
+        }
+    })
+}
+
+onMounted(() => {
+    if (data?.value != undefined || data?.value != null) {
+        model.value = data.value
+    }
+    getRulesData() 
+})
 
 </script>
 

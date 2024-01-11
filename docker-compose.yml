@@ -2,15 +2,18 @@ version: "3"
 services:
   anime-repository-web:
     image: yoaken/anime-repository-web
+    extra_hosts:
+      - "api.themoviedb.org:52.85.151.28"
+      - "www.themoviedb.org:99.86.91.3"
+      - "image.tmdb.org:169.150.247.36"
     container_name: arw
     ports:
-      - "8080:8080"
+      - "10000:10000"
     volumes:
-      - ./config.yml:/app/anime-repository-web/config.yml:rw
+      - ./config.yml:/app/anime-repository-web/config.yml
       - ./data/:/app/anime-repository-web/data/:rw
-      - ./Downloads/:/app/anime-repository-web/downloads/:rw
-      - ./collections/:/app/anime-repository-web/collections/:rw
+      - ./Downloads/:/app/anime-repository-web/downloads/
+      - ./collections/:/app/anime-repository-web/collections/
       # add paths as the volumes to dispose video files
     environment:
       - GIN_MODE=release
-

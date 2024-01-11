@@ -2,6 +2,7 @@ moviedetails.json
 tvdetails.json
 *.exe
 anime-repository-web
+main
 test/
 data/
 resource/*
