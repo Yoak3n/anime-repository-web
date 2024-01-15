@@ -130,7 +130,7 @@ const getRule = () => {
             rules.value = res.data.data
             window.$message.success("Get rules successfully", { keepAliveOnHover: true, duration: 5000 })
         } else {
-            window.$message.error("Get rules error" + res.data.message, { keepAliveOnHover: true, duration: 5000 });
+            window.$message.error("Get rules error : " + res.data.message, { keepAliveOnHover: true, duration: 5000 });
         }
     })
 }
@@ -157,7 +157,7 @@ onMounted(() => {
         if (res.data.code == 200) {
             rules.value = res.data.data
         } else {
-            window.$message.error("get rules error" + res.data.message, { keepAliveOnHover: true, duration: 5000 });
+            window.$message.error("get rules error: " + res.data.message, { keepAliveOnHover: true, duration: 5000 });
         }
     })
 })

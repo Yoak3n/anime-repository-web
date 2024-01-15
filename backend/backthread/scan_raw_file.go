@@ -36,10 +36,12 @@ func Scan() error {
 	}
 
 	files, err := scanLoop(config.Conf.RawPath, "")
+	if err != nil {
+		return err
+	}
 	videoFiles := make([]string, 0)
 	for _, file := range files {
 		if checkVideo(file) {
-			// logger.INFO.Println("找到文件", file)
 			videoFiles = append(videoFiles, file)
 		}
 	}
@@ -55,6 +57,11 @@ func Scan() error {
 }
 
 func GetFiles() (files []model.TVItem) {
+	err := Scan()
+	if err != nil {
+		logger.ERROR.Println(err)
+		return files
+	}
 	for _, tvItem := range cache.TvFiles {
 		if !cache.Recognized[tvItem.FullPath] {
 			files = append(files, *tvItem)
