@@ -37,7 +37,7 @@ func init() {
 
 // Dispose cache to make files match rules
 func Dispose(filePath string) {
-	logger.DEBUG.Println("start dispose:", filePath)
+	logger.DEBUG.Println("found file:", filePath)
 	for path := range cache.TvFiles {
 		if path == filePath {
 			return
@@ -54,12 +54,12 @@ func MatchRules() {
 		for _, rule := range cache.Rules {
 			if !cache.Recognized[filePath] {
 				if rule.FileExtractReg.Match([]byte(filePath)) && !rule.Hidden && !cache.Recognized[filePath] {
-					logger.DEBUG.Println("匹配成功")
+					// logger.DEBUG.Println("匹配成功")
 					cache.MatchRules[filePath] = rule
 
 				}
 			} else {
-				logger.INFO.Println("文件已识别")
+				logger.INFO.Println(filePath, "文件已识别")
 			}
 
 		}
@@ -68,7 +68,6 @@ func MatchRules() {
 }
 
 func WorkOnMatchedCache() error {
-	logger.INFO.Println("处理文件")
 	logger.DEBUG.Println("start work on matched cache")
 	for filePath, rule := range cache.MatchRules {
 		// 过滤已识别文件，不过之后已识别的文件已经不在该文件夹
