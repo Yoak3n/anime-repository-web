@@ -215,7 +215,7 @@ func downloadImage(path string, imgUrl string) error {
 	writer := bufio.NewWriter(file)
 	written, err := io.Copy(writer, reader)
 	if err != nil {
-		log.Println("write file error：", err)
+		log.Println("write file error: ", err)
 		return err
 	}
 	fmt.Printf("Total length: %d\n", written)
@@ -237,12 +237,12 @@ func handleTVEpisodeNfo(nfo *model.TVEpisode, newPath string, name string, seaso
 	if err != nil {
 		return err
 	}
-
-	err = writeTVEpisodeNfo(tvEpisodeData, newPath, nfo.Title)
+	episodeName := fmt.Sprintf("%s - S%dE%d - %s", name, nfo.Season, nfo.Episode, nfo.Title)
+	err = writeTVEpisodeNfo(tvEpisodeData, newPath, episodeName)
 	if err != nil {
 		return err
 	}
-	episodeImg := fmt.Sprintf("%s/%s - S%dE%d%s-thumb.jpg", newPath, name, nfo.Season, nfo.Episode, nfo.Title)
+	episodeImg := fmt.Sprintf("%s/%s-thumb.jpg", newPath, episodeName)
 	thumbUrl := util.MakeImagePath(nfo.Thumb.Value)
 	err = downloadImage(episodeImg, thumbUrl)
 	if err != nil {
