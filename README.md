@@ -1,6 +1,7 @@
 <p align="center" >
     <h2 align="center">anime-repository-web</h2>
-    <h3 align="center">a http server based on go</h3>
+    <p align="center"><a href="https://hub.docker.com/r/yoaken/anime-repository-web"><img src="https://img.shields.io/docker/pulls/yoaken/anime-repository-web?&logo=docker" alt="Docker Pulls"></a>
+    <a href="./LICENSE"><img src="https://img.shields.io/github/license/Yoak3n/anime-repository-web" alt="License"></a></p>
     <p align="center">just a practice work for self-entertainment. </p>
 <p>
 
