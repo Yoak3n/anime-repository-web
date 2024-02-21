@@ -148,7 +148,6 @@ func collectImages(name string, logo string, poster string, fanart string, seaso
 }
 
 func downloadImages(name string, c *model.TVCollection) {
-	// 同步or异步？---是否会被风控
 	wg := &sync.WaitGroup{}
 	wg.Add(3 + len(c.Seasons))
 

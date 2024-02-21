@@ -70,10 +70,10 @@ func MatchRules() {
 func WorkOnMatchedCache() error {
 	logger.DEBUG.Println("start work on matched cache")
 	for filePath, rule := range cache.MatchRules {
-		// 过滤已识别文件，不过之后已识别的文件已经不在该文件夹
+		// 过滤已识别文件
 		if !cache.Recognized[filePath] {
 			cache.Recognized[filePath] = true
-			// 使用协程加快进度
+			// 使用协程加快进度,但是太占资源！
 			go func(filePath string, rule model.Rule) {
 				allDirectory := fmt.Sprintf("%s/%s/Season %d", config.Conf.TVPath, rule.Name, rule.Season)
 				util.CreateDirNotExists(allDirectory)
