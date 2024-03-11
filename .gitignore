@@ -5,5 +5,5 @@ anime-repository-web
 main
 test/
 data/
-resource/*
+resource/
 config.yml

@@ -17,6 +17,7 @@ type Cache struct {
 	MatchRules map[string]*model.Rule
 	Recognized map[string]bool
 	Rules      []*model.Rule
+	Worker     chan string
 }
 
 // create a cache for disposal
@@ -32,20 +33,25 @@ func init() {
 		MatchRules: make(map[string]*model.Rule),
 		Rules:      make([]*model.Rule, 0),
 		Recognized: make(map[string]bool),
+		Worker:     make(chan string, 5),
 	}
 }
 
 // Dispose cache to make files match rules
 func Dispose(filePath string) {
-	logger.DEBUG.Println("found file:", filePath)
-	for path := range cache.TvFiles {
-		if path == filePath {
-			return
+	for {
+		select {
+		case path := <-cache.Worker:
+			logger.DEBUG.Println("found file:", filePath)
+			for k := range cache.TvFiles {
+				if path == k {
+					return
+				}
+			}
+			i := model.NewTVItem(filePath)
+			cache.TvFiles[filePath] = i
 		}
 	}
-	i := model.NewTVItem(filePath)
-	cache.TvFiles[filePath] = i
-
 }
 
 func MatchRules() {
